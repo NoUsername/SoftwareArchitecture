@@ -27,6 +27,8 @@ Importing a Subversion Repo?
 
   Click here
       
+      
+MY TEST ASDF
 
 When you're done:
 
