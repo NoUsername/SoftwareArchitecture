@@ -1,0 +1,32 @@
+﻿Additional information for design/architecture of Exercise 3
+=====
+
+This document should be seen as an addition to the Exercise 3 description .doc
+
+General
+-----
+
+- TESTS, TESTS, TESTS (unit tests, lots of them!)
+- think about which communication technique to use (RMI, sockets -> protocol?, http)
+  - does it support everything we need? can we check via rmi if we lost connection?
+
+Server
+-----
+
+- Its ok if we have some main-loop which is also our main poll-frequency
+- We need to somehow handle the "too many sensors to fullfil poll-frequency" case
+- bla
+
+
+Clients
+-----
+
+- we should try to make them modular (make the windows "flexible"/dynamic): new sensors should be maybe automatically docked as tabs or sth...
+
+
+
+*NOTE:*
+this document is written in markdown, if you don't know what that is,
+copy the contents and paste them in the blue box [here][1]
+
+[1]: http://joncom.be/experiments/markdown-editor/edit/
