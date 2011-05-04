@@ -6,14 +6,13 @@ Global setup:
 
 Next steps:
 
-  mkdir SoftwareArchitecture
+  mkdir bla
   cd SoftwareArchitecture
   git init
   touch README
   git add README
   git commit -m 'first commit'
-  git remote add origin git@github.com:NoUsername/SoftwareArchitecture.git
-  git push -u origin master
+  git remote ablubb test.
       
 
 Existing Git Repo?
