@@ -7,22 +7,33 @@ General
 -----
 
 - TESTS, TESTS, TESTS (unit tests, lots of them!)
-- think about which communication technique to use (RMI, sockets -> protocol?, http)
+- think about which communication technique to use between server<->clients (RMI, sockets -> protocol?, http)
   - does it support everything we need? can we check via rmi if we lost connection?
-
+  
 Server
 -----
 
 - Its ok if we have some main-loop which is also our main poll-frequency
 - We need to somehow handle the "too many sensors to fullfil poll-frequency" case
-- bla
-
+- we need different output formats (html/text), we could get inspiration about how such a thing is typically implemented by looking at "log appenders" (http://www.allapplabs.com/log4j/log4j_appenders.htm)
+- do we need support for dynamically adding/removing sensors? (i don't mean activating, this can be done via admin-if, but really adding new servers at runtime)
+- how are sensors connected to the server? (locally -> just some implementations of an interface, or via a network if?) i am guessing locally, or since it isn't defined anywhere, we can define it ourselves: so locally it is :)
+- is the data that is sent to the clients the output of the "processing engine"? or what does that engine do anyway? is that responsible for the different output formats? then "output formatter" would be a more accurate name, so i guess it does something else -> ask!
 
 Clients
 -----
 
 - we should try to make them modular (make the windows "flexible"/dynamic): new sensors should be maybe automatically docked as tabs or sth...
+- the part which delivers sensor data to the client should be flexible enough to be used for both: the administrative and the normal client
+- the administrative client can be identified by the port it connects to (this is enough security for now)
+- it would be cool to make the administrative client smart enough, that it is extensible without any code change (example: we come up with a new feature: "admin client can activate/deactivate the individual output formats". this could be realized like so: on startup (register of admin client) he gets information about available options (name="output1", type="on/off", tag="someInternalIdentifier") because of this information, we could dynamically add a checkbox in our client, in some config area, which when pressed sends the tag-id + the new value (on/off)... that would be really cool, probably not very hard to implement and make extending extremely easy)
+- the clients are generally push-only (they don't poll data from the server, all new data-updates are pushed to them). data that is sent by them is only: "(un)subscribe from sensor x". a list of all available sensors is pushed to them after they connect
 
+Sensors
+-----
+
+- for testing we should have some "rogue" sensors which don't behave well (e.g. take extremely long to poll, or push extremely often, ...)
+- test lots of sensors at the same time (can be the same ones, just more instances)
 
 
 *NOTE:*
