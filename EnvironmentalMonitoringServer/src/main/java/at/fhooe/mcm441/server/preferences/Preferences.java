@@ -1,4 +1,4 @@
-package at.fhooe.mcm441.Monitoring.preferences;
+package at.fhooe.mcm441.server.preferences;
 
 public class Preferences {
 

@@ -1,4 +1,4 @@
-package at.fhooe.mcm441.Monitoring.preferences;
+package at.fhooe.mcm441.server.preferences;
 
 /**
  * update the listener
@@ -10,7 +10,7 @@ public interface IChangeListener {
 	/**
 	 * update
 	 * @param key
-	 *            „sensors.visibility.id4“
+	 *            ï¿½sensors.visibility.id4ï¿½
 	 * @param msg
 	 *            the actual value "42"
 	 */

@@ -1,4 +1,4 @@
-package at.fhooe.mcm441.SensorTest;
+package at.fhooe.mcm441.sensor;
 
 import junit.framework.Test;
 import junit.framework.TestCase;

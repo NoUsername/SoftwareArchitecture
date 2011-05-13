@@ -1,4 +1,6 @@
-package at.fhooe.mcm441.Monitoring.sensor;
+package at.fhooe.mcm441.sensor;
+
+import at.fhooe.mcm441.sensor.Sensor;
 
 /**
  * actually the sensor program

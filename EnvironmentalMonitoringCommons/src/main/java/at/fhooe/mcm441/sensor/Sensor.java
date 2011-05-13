@@ -1,4 +1,4 @@
-package at.fhooe.mcm441.Monitoring.sensor;
+package at.fhooe.mcm441.sensor;
 
 /**
  * could be used inside the sensor program as well, but also in the server as

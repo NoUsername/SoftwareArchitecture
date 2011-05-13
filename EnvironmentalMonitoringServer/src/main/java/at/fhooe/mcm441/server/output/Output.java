@@ -1,4 +1,4 @@
-package at.fhooe.mcm441.Monitoring.output;
+package at.fhooe.mcm441.server.output;
 
 public interface Output {
 	

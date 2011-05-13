@@ -1,6 +1,6 @@
-package at.fhooe.mcm441.Monitoring.processing;
+package at.fhooe.mcm441.server.processing;
 
-import at.fhooe.mcm441.Monitoring.sensor.Sensor;
+import at.fhooe.mcm441.sensor.Sensor;
 
 /**
  * process the data

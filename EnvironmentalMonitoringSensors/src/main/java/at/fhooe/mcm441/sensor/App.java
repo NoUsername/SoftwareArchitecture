@@ -1,4 +1,4 @@
-package at.fhooe.mcm441.server;
+package at.fhooe.mcm441.sensor;
 
 import org.slf4j.Logger;
 
