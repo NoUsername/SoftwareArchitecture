@@ -3,3 +3,4 @@ bin
 *.lnk
 EnvironmentalMonitoringServer/target/*
 EnvironmentalMonitoringServer/.settings
+EnvironmentalMonitoringServer/.classpath
