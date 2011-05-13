@@ -83,7 +83,17 @@ Testing:
 	Server
 	Sensors
 
+
+paul:
+	Network connection library
 	
+meli:
+	ClientGUI
+	
+manu:
+	preferences
+	processing
+	output
 	
 TODO:
 Netzwerkprotokoll definieren
