@@ -36,6 +36,63 @@ Sensors
 - test lots of sensors at the same time (can be the same ones, just more instances)
 
 
+Workpackages
+-----
+
+Client:
+	GUI
+		Admin/Viewing Interface
+		Charts
+	Network Connection
+		sockets mit xml/json
+	
+Sensors:
+	Network Connection
+		sockets mit xml/json
+	Data extraction/delivery
+		Output? (=format, ...)
+	Settings
+		Push-Interval, ...
+
+Server:
+	Preferences (data-container -> dynamic and static data (= the ones that are cahnged on runtime and the ones that are changed at bootup))
+		list of all sensors
+		Listener login (e.g. Client manager is listener for new sensors/visibility changed)
+		[...]
+	Output
+		multiple formats
+	Client Manager
+		Network Connection
+			sockets mit xml/json
+			Threading
+		which client for which sensor
+	Sensor Abrastraction
+		Sensor management (ip-addresses, ...)
+		Network Connection
+			sockets mit xml/json
+	Sensor Manager
+		will be merged with push/pull abstraction :-)
+	Processing
+		Pipes & Filters?
+		Sliding Window?
+		Filtering?
+		
+	
+Testing:
+	Client
+	Server
+	Sensors
+
+	
+	
+TODO:
+Netzwerkprotokoll definieren
+Netzwerk connection -> selbe library für client und server
+different ports for admin client/viewing client
+
+
+
+
 *NOTE:*
 this document is written in markdown, if you don't know what that is,
 copy the contents and paste them in the blue box [here][1]
