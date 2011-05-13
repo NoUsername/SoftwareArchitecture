@@ -1,8 +1,5 @@
 package at.fhooe.mcm441.Monitoring;
 
-import java.io.InputStream;
-import java.util.ResourceBundle;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;

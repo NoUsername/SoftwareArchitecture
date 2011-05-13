@@ -20,7 +20,18 @@
     <sonar.jdbc.password></sonar.jdbc.password>
     <sonar.host.url>http://localhost:9000</sonar.host.url>
   </properties>
+<!--  
+  <modules>
+    <module>../EnvironmentalMonitoringCommons</module>
+  </modules>
 
+	  <dependency>
+	      <groupId>at.fhooe.mcm441.commons</groupId>
+	      <artifactId>MonitoringCommons</artifactId>
+	      <version>0.0.1</version>
+	      <scope>runtime</scope>
+     </dependency>
+-->
   <build>
   	<plugins>
   		<plugin>
@@ -32,7 +43,7 @@
 		        </descriptors>
 		        <archive>
 		          <manifest>
-		            <mainClass>at.fhooe.mcm441.Monitoring.App</mainClass>
+		            <mainClass>at.fhooe.mcm441.Monitoring.SampleChartApp</mainClass>
 		          </manifest>
 		        </archive>
   				
@@ -50,6 +61,20 @@
   	</plugins>
   </build>
   <dependencies>
+
+  
+     <dependency>
+      <groupId>org.swtchart</groupId>
+      <artifactId>swtchart</artifactId>
+      <version>0.7.0</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.swtchart</groupId>
+      <artifactId>swtchart-ext</artifactId>
+      <version>0.7.0</version>
+      <scope>runtime</scope>
+    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
