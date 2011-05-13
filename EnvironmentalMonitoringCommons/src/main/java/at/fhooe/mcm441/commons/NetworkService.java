@@ -1,4 +1,4 @@
-package at.fhooe.mcm441.Monitoring.network;
+package at.fhooe.mcm441.commons;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;

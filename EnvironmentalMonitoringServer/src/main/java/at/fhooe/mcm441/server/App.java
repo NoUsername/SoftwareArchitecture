@@ -1,4 +1,4 @@
-package at.fhooe.mcm441.Monitoring;
+package at.fhooe.mcm441.server;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;

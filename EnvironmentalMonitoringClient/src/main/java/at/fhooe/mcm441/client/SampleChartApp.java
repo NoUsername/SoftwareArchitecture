@@ -1,4 +1,4 @@
-package at.fhooe.mcm441.Monitoring;
+package at.fhooe.mcm441.client;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -22,9 +22,9 @@ import org.swtchart.Chart;
 import org.swtchart.ILineSeries;
 import org.swtchart.ISeries.SeriesType;
 
-import at.fhooe.mcm441.Monitoring.network.NetworkService;
-import at.fhooe.mcm441.Monitoring.network.NetworkServiceClient;
-import at.fhooe.mcm441.Monitoring.network.PackageListener;
+import at.fhooe.mcm441.commons.NetworkService;
+import at.fhooe.mcm441.commons.NetworkServiceClient;
+import at.fhooe.mcm441.commons.PackageListener;
 
 public class SampleChartApp implements PackageListener {
 	private final Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass().getName());

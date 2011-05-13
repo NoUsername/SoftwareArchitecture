@@ -1,4 +1,4 @@
-package at.fhooe.mcm441.Monitoring.network;
+package at.fhooe.mcm441.commons;
 
 public interface PackageListener {
 	

@@ -1,4 +1,4 @@
-package at.fhooe.mcm441.Monitoring.network;
+package at.fhooe.mcm441.commons;
 
 import java.io.Closeable;
 import java.io.IOException;

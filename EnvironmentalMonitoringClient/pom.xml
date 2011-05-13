@@ -2,12 +2,12 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>at.fhooe.mcm441.server</groupId>
-  <artifactId>Monitoring</artifactId>
+  <groupId>at.fhooe.mcm441.client</groupId>
+  <artifactId>MonitoringClient</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>EnvironmentalMonitoringServer</name>
+  <name>EnvironmentalMonitoringClient</name>
 
   <properties>
   	<!-- These properties are only relevant for sonar! -->
@@ -38,7 +38,7 @@
 		        </descriptors>
 		        <archive>
 		          <manifest>
-		            <mainClass>at.fhooe.mcm441.server.SampleChartApp</mainClass>
+		            <mainClass>at.fhooe.mcm441.client.App</mainClass>
 		          </manifest>
 		        </archive>
   				
@@ -55,7 +55,6 @@
 		</plugin>
   	</plugins>
   </build>
-  
   
   <dependencies>
     <dependency>

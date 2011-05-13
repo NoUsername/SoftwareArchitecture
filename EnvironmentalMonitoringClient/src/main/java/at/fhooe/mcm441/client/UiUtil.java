@@ -1,4 +1,4 @@
-package at.fhooe.mcm441.Monitoring;
+package at.fhooe.mcm441.client;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;

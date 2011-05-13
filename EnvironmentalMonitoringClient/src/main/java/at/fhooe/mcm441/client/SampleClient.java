@@ -1,4 +1,4 @@
-package at.fhooe.mcm441.Monitoring;
+package at.fhooe.mcm441.client;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -15,9 +15,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 
-import at.fhooe.mcm441.Monitoring.network.NetworkService;
-import at.fhooe.mcm441.Monitoring.network.NetworkServiceClient;
-import at.fhooe.mcm441.Monitoring.network.PackageListener;
+import at.fhooe.mcm441.commons.NetworkService;
+import at.fhooe.mcm441.commons.NetworkServiceClient;
+import at.fhooe.mcm441.commons.PackageListener;
 
 public class SampleClient implements PackageListener {
 	private final Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass().getName());
