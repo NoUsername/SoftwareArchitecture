@@ -3,8 +3,8 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>at.fhooe.mcm441.server</groupId>
-  <artifactId>Monitoring</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <artifactId>EnvironmentalMonitoringServer</artifactId>
+  <version>0.0.1</version>
   <packaging>jar</packaging>
 
   <name>EnvironmentalMonitoringServer</name>
@@ -25,6 +25,7 @@
 	  <groupId>at.fhooe.mcm441</groupId>
 	  <artifactId>EnvironmentalMonitoringProject</artifactId>
 	  <version>0.0.1</version>
+    <relativePath>../EnvironmentalMonitoringProject</relativePath>
   </parent>
 
   <build>
@@ -38,7 +39,7 @@
 		        </descriptors>
 		        <archive>
 		          <manifest>
-		            <mainClass>at.fhooe.mcm441.server.SampleChartApp</mainClass>
+		            <mainClass>at.fhooe.mcm441.server.App</mainClass>
 		          </manifest>
 		        </archive>
   				
@@ -56,20 +57,7 @@
   	</plugins>
   </build>
   
-  
   <dependencies>
-    <dependency>
-      <groupId>org.swtchart</groupId>
-      <artifactId>swtchart</artifactId>
-      <version>0.7.0</version>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.swtchart</groupId>
-      <artifactId>swtchart-ext</artifactId>
-      <version>0.7.0</version>
-      <scope>runtime</scope>
-    </dependency>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -80,29 +68,16 @@
     	<groupId>org.slf4j</groupId>
     	<artifactId>slf4j-api</artifactId>
     	<version>1.6.1</version>
-    	<scope>runtime</scope>
     </dependency>
     <dependency>
     	<groupId>org.slf4j</groupId>
     	<artifactId>slf4j-simple</artifactId>
     	<version>1.6.1</version>
-    	<scope>runtime</scope>
     </dependency>
     <dependency>
-    	<groupId>org.eclipse</groupId>
-    	<artifactId>swt</artifactId>
-    	<version>3.3.0-v3346</version>
+      <groupId>at.fhooe.mcm441.commons</groupId>
+        <artifactId>EnvironmentalMonitoringCommons</artifactId>
+        <version>0.0.1</version>
     </dependency>
-    <dependency>
-    	<groupId>org.eclipse.swt.win32.win32</groupId>
-    	<artifactId>x86</artifactId>
-    	<version>3.3.0-v3346</version>
-    </dependency>
-    
-	<dependency>
-	  <groupId>at.fhooe.mcm441.commons</groupId>
-      <artifactId>MonitoringCommons</artifactId>
-      <version>0.0.1</version>
-	</dependency>
   </dependencies>
 </project>

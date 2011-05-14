@@ -14,10 +14,10 @@
   </properties>
   
   <modules>
-    <module>../Monitoring</module>
-    <module>../MonitoringCommons</module>
-    <module>../MonitoringClient</module>
-    <module>../MonitoringSensor</module>
+    <module>../EnvironmentalMonitoringServer</module>
+    <module>../EnvironmentalMonitoringCommons</module>
+    <module>../EnvironmentalMonitoringClient</module>
+    <module>../EnvironmentalMonitoringSensors</module>
   </modules>
 
 </project>

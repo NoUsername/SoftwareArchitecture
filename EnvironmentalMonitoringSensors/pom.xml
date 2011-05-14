@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>at.fhooe.mcm441.sensor</groupId>
-  <artifactId>MonitoringSensor</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <artifactId>EnvironmentalMonitoringSensors</artifactId>
+  <version>0.0.1</version>
   <packaging>jar</packaging>
 
-  <name>EnvironmentalMonitoringSensor</name>
+  <name>EnvironmentalMonitoringSensors</name>
 
   <properties>
   	<!-- These properties are only relevant for sonar! -->
@@ -25,6 +25,7 @@
 	  <groupId>at.fhooe.mcm441</groupId>
 	  <artifactId>EnvironmentalMonitoringProject</artifactId>
 	  <version>0.0.1</version>
+    <relativePath>../EnvironmentalMonitoringProject</relativePath>
   </parent>
 
   <build>
@@ -67,17 +68,15 @@
     	<groupId>org.slf4j</groupId>
     	<artifactId>slf4j-api</artifactId>
     	<version>1.6.1</version>
-    	<scope>runtime</scope>
     </dependency>
     <dependency>
     	<groupId>org.slf4j</groupId>
     	<artifactId>slf4j-simple</artifactId>
     	<version>1.6.1</version>
-    	<scope>runtime</scope>
     </dependency>    
 	<dependency>
 	  <groupId>at.fhooe.mcm441.commons</groupId>
-      <artifactId>MonitoringCommons</artifactId>
+      <artifactId>EnvironmentalMonitoringCommons</artifactId>
       <version>0.0.1</version>
 	</dependency>
   </dependencies>

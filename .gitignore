@@ -4,3 +4,4 @@ bin
 EnvironmentalMonitoringServer/target/*
 EnvironmentalMonitoringServer/.settings
 target
+.settings
