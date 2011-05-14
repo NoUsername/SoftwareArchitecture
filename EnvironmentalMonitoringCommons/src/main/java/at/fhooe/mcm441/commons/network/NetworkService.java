@@ -1,4 +1,4 @@
-package at.fhooe.mcm441.commons;
+package at.fhooe.mcm441.commons.network;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,7 +12,7 @@ public class NetworkService extends NetworkServiceClient {
 
 	private ServerSocket sock = null;
 	
-	public NetworkService(PackageListener update) {
+	public NetworkService(IPackageListener update) {
 		super(update);
 	}
 	
@@ -30,14 +30,14 @@ public class NetworkService extends NetworkServiceClient {
 			return false;
 		}
 		
-		isRunning = true;
-		thread = new Thread(new Runnable() {
+		m_isRunning = true;
+		m_thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				startServer(port);
 			}
 		});
-		thread.start();
+		m_thread.start();
 		return true;
 	}
 	
@@ -52,25 +52,25 @@ public class NetworkService extends NetworkServiceClient {
 	
 	private void startServer(int port) {
 		InputStream is;
-		while (isRunning) {
+		while (m_isRunning) {
 			is = null;
 			try {
-				curSock = sock.accept();
-				is = curSock.getInputStream();
+				m_curSock = sock.accept();
+				is = m_curSock.getInputStream();
 				Reader r = new InputStreamReader( is );
 				
 				do {
 					long l = readPackageSize(is);
 					
 					String msg = readText(r, l);
-					update.onNewPackage(msg);
+					m_update.onNewPackage(msg);
 					
-				} while (isRunning);
+				} while (m_isRunning);
 			} catch (Exception _e) {
 				log.warn("problem with client");
 				tryClose(is);
 			}
-			curSock = null;
+			m_curSock = null;
 		}
 	}
 	

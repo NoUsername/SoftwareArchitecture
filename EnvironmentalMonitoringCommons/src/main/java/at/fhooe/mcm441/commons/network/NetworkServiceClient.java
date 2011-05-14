@@ -1,4 +1,4 @@
-package at.fhooe.mcm441.commons;
+package at.fhooe.mcm441.commons.network;
 
 import java.io.Closeable;
 import java.io.IOException;
@@ -14,25 +14,45 @@ import java.security.InvalidParameterException;
 
 import org.slf4j.Logger;
 
-public class NetworkServiceClient {
+import at.fhooe.mcm441.commons.protocol.IMessageSender;
+
+
+public class NetworkServiceClient implements IMessageSender {
 	private final Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass().getName());
 
-	protected PackageListener update;
-	protected boolean isRunning = false;
-	protected Thread thread = null;
-	protected Socket curSock = null;
+	protected IPackageListener m_update;
+	protected boolean m_isRunning = false;
+	protected Thread m_thread = null;
+	protected Socket m_curSock = null;
+	protected IConnectionStatusListener m_conStatusListener = null;
 	
-	public NetworkServiceClient(PackageListener update) {
-		this.update = update;
+	public NetworkServiceClient(IPackageListener update) {
+		this.m_update = update;
+	}
+	
+	public NetworkServiceClient(IPackageListener update, IConnectionStatusListener statusListener) {
+		this(update);
+		m_conStatusListener = statusListener;
+	}
+	
+	/**
+	 *
+	 * this constructor is package-private by design! don't make it public/private!
+	 *
+	 */
+	NetworkServiceClient(Socket curSock, IPackageListener listener, IConnectionStatusListener statusListener) {
+		this.m_curSock = curSock;
+		this.m_update = listener;
+		m_conStatusListener = statusListener;
 	}
 	
 	public void stop() {
-		isRunning = false;
+		m_isRunning = false;
 		try {
 			Thread.sleep(1000);
-			if (thread.isAlive()) {
-				thread.stop();
-				curSock.close();
+			if (m_thread.isAlive()) {
+				m_thread.stop();
+				m_curSock.close();
 			}
 		} catch (Exception e) {
 			log.warn("error while trying to stop.... ", e);
@@ -40,15 +60,15 @@ public class NetworkServiceClient {
 	}
 	
 	public boolean isRunning() {
-		return isRunning || (thread != null && thread.isAlive());
+		return m_isRunning || (m_thread != null && m_thread.isAlive());
 	}
 	
 	public boolean sendMessage(String msg) {
-		if (!isRunning || curSock == null)
+		if (!m_isRunning || m_curSock == null)
 			return false;
 		
 		try {
-			OutputStream os = curSock.getOutputStream();
+			OutputStream os = m_curSock.getOutputStream();
 			int len = msg.length();
 			ObjectOutputStream oos = new ObjectOutputStream(os);
 			oos.writeLong((long)len);
@@ -63,24 +83,58 @@ public class NetworkServiceClient {
 	}
 
 	public boolean connectAndStart(InetAddress addr, int port) {
-		if (isRunning)
+		if (m_isRunning)
 			return false;
 		
 		try {
-			isRunning = true;
-			curSock = new Socket(addr, port);
-			thread = new Thread(new Runnable() {
+			m_isRunning = true;
+			m_curSock = new Socket(addr, port);
+			m_thread = new Thread(new Runnable() {
 				
 				@Override
 				public void run() {
 					clientLoop();
 				}
 			});
-			thread.start();
+			m_thread.start();
+			if (m_conStatusListener != null)
+				m_conStatusListener.onConnectionEstablished();
 			return true;
 		} catch (Exception e) {
 			log.warn("cannot start client socket ", e);
-			isRunning = false;
+			m_isRunning = false;
+			if (m_conStatusListener != null)
+				m_conStatusListener.onConnectionLost();
+			return false;
+		}
+	}
+	
+	/**
+	 * leave this method package-privat!
+	 * @return
+	 */
+	boolean connectToCurrentSocket() {
+		if (m_isRunning)
+			return false;
+		
+		try {
+			m_isRunning = true;
+			m_thread = new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					clientLoop();
+				}
+			});
+			m_thread.start();
+			if (m_conStatusListener != null)
+				m_conStatusListener.onConnectionEstablished();
+			return true;
+		} catch (Exception e) {
+			log.warn("cannot start client socket ", e);
+			m_isRunning = false;
+			if (m_conStatusListener != null)
+				m_conStatusListener.onConnectionLost();
 			return false;
 		}
 	}
@@ -88,21 +142,24 @@ public class NetworkServiceClient {
 	private void clientLoop() {
 		InputStream is = null;
 		try {
-			is = curSock.getInputStream();
+			is = m_curSock.getInputStream();
 			Reader r = new InputStreamReader( is );
 			
 			do {
 				long l = readPackageSize(is);
 				
 				String msg = readText(r, l);
-				update.onNewPackage(msg);
+				m_update.onNewPackage(msg);
 				
-			} while (isRunning);
+			} while (m_isRunning);
 		} catch (Exception _e) {
 			log.warn("problem with client");
 			tryClose(is);
-			isRunning = false;
+			m_isRunning = false;
 		}
+		
+		if (m_conStatusListener != null)
+			m_conStatusListener.onConnectionLost();
 	}
 	
 	/* **

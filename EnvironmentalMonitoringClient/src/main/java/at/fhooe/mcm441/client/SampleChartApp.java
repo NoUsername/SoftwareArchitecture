@@ -22,11 +22,11 @@ import org.swtchart.Chart;
 import org.swtchart.ILineSeries;
 import org.swtchart.ISeries.SeriesType;
 
-import at.fhooe.mcm441.commons.NetworkService;
-import at.fhooe.mcm441.commons.NetworkServiceClient;
-import at.fhooe.mcm441.commons.PackageListener;
+import at.fhooe.mcm441.commons.network.IPackageListener;
+import at.fhooe.mcm441.commons.network.NetworkService;
+import at.fhooe.mcm441.commons.network.NetworkServiceClient;
 
-public class SampleChartApp implements PackageListener {
+public class SampleChartApp implements IPackageListener {
 	private final Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass().getName());
 	
 	public static void main(String[] args) {
