@@ -11,7 +11,7 @@ public interface INotificationService {
 	 * register the ChangeListener on the service
 	 * 
 	 * @param prefix
-	 *            e.g. �sensors.visibility�
+	 *            e.g. "sensors.visibility"
 	 * @param listener
 	 *            the object
 	 * @return true in case of success

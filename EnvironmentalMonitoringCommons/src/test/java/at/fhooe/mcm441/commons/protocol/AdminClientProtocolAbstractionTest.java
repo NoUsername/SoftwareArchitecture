@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 
 public class AdminClientProtocolAbstractionTest extends TestCase {
 	
-	public static String receiveMsg = "{\"data\":{\"sid\":\"iamasensorid\",\"vtype\":\"someconf\",\"bool\":\"somedata\"},\"type\":\"sensorconf\"}";
+	public static String receiveMsg = "{\"data\":{\"val\":\"somedata\",\"sid\":\"iamasensorid\",\"vtype\":\"someconf\"},\"type\":\"sensorconf\"}";
 	
 	public static String testMsg1 = "{\"data\":{\"clientid\":\"someclient\",\"clientaddr\":\"10.0.0.1\",\"bool\":true},\"type\":\"client\"}";
 	public static String testMsg2 = "";
@@ -31,7 +31,7 @@ public class AdminClientProtocolAbstractionTest extends TestCase {
 	
 	public void testSetSensorConf() {
 		prot.setSensorConfiguration("iamasensorid", "someconf", "somedata");
-		assertEquals(TestMessageSender.lastMsg, receiveMsg);
+		assertEquals(receiveMsg, TestMessageSender.lastMsg);
 	}
 	
 }

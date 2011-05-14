@@ -10,7 +10,7 @@ public interface IChangeListener {
 	/**
 	 * update
 	 * @param key
-	 *            �sensors.visibility.id4�
+	 *            "sensors.visibility.id4"
 	 * @param msg
 	 *            the actual value "42"
 	 */

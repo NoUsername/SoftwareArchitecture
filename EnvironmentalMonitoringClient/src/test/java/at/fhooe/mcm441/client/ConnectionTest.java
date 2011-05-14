@@ -18,6 +18,7 @@ public class ConnectionTest extends TestCase implements IClientSideListener, ICo
 	 */
 	public void testConnecitonFails() {
 		try {
+			@SuppressWarnings("unused")
 			Connection c = new Connection("localhost", 4444, this, this);
 			// this connection should fail... wait for that:
 			for (int i=0; i<10; i++) {

@@ -2,6 +2,11 @@ package at.fhooe.mcm441.commons.network;
 
 import java.util.UUID;
 
+/**
+ * stores information about a client
+ * 
+ * @author Paul Klingelhuber
+ */
 public class Client {
 	public String m_id;
 	public String m_address;
