@@ -9,7 +9,6 @@
 
   <name>EnvironmentalMonitoringCommons</name>
   
-
   <parent>
 	  <groupId>at.fhooe.mcm441</groupId>
 	  <artifactId>EnvironmentalMonitoringProject</artifactId>
