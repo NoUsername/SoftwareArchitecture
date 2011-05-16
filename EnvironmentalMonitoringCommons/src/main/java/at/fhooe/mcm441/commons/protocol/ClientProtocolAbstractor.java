@@ -44,8 +44,8 @@ public class ClientProtocolAbstractor implements IClientCommands {
 					m_listener.onSensorDeactivated(sId);
 				}
 			} else if (Protocol.TYPE_SENSORDATA.equals(type)) {
-				String sId = data.getString("id");
-				double val = data.getDouble("value");
+				String sId = data.getString(Protocol.FIELD_SENSORID);
+				double val = data.getDouble(Protocol.FIELD_VALUE);
 				m_listener.onNewSensorData(sId, val);
 			} else {
 				// unknown msg
@@ -66,6 +66,16 @@ public class ClientProtocolAbstractor implements IClientCommands {
 			inner.put(Protocol.FIELD_YESNO, registered);
 			
 			m_endpoint.sendMessage(Protocol.createJsonContainer(Protocol.TYPE_REGISTER, inner));
+		} catch (JSONException jse) {
+			log.warn("could not build json", jse);
+		}
+	}
+	
+	@Override
+	public void logoff() {
+		try {
+			JSONObject inner = new JSONObject();			
+			m_endpoint.sendMessage(Protocol.createJsonContainer(Protocol.TYPE_BYE, inner));
 		} catch (JSONException jse) {
 			log.warn("could not build json", jse);
 		}

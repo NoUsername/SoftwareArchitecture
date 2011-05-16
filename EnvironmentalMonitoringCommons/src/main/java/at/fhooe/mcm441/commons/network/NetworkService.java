@@ -1,8 +1,6 @@
 package at.fhooe.mcm441.commons.network;
 
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.ServerSocket;
 
 import org.slf4j.Logger;
@@ -43,11 +41,7 @@ public class NetworkService extends NetworkServiceClient {
 	
 	public void stop() {
 		super.stop();
-		try {
-			sock.close();
-		} catch (Exception e) {
-			log.warn("error while trying to stop.... ", e);
-		}
+		NWUtils.tryClose(sock);
 	}
 	
 	private void startServer(int port) {
@@ -57,18 +51,17 @@ public class NetworkService extends NetworkServiceClient {
 			try {
 				m_curSock = sock.accept();
 				is = m_curSock.getInputStream();
-				Reader r = new InputStreamReader( is );
 				
 				do {
 					long l = readPackageSize(is);
 					
-					String msg = readText(r, l);
+					String msg = readText(is, l);
 					m_update.onNewPackage(msg);
 					
 				} while (m_isRunning);
 			} catch (Exception _e) {
 				log.warn("problem with client");
-				tryClose(is);
+				NWUtils.tryClose(is);
 			}
 			m_curSock = null;
 		}

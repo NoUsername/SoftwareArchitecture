@@ -42,15 +42,6 @@ public class AdminConnection extends Connection {
 		// overwrite the parents-instance with the admin-protocol-abstractor
 		prot = adminProt;
 	}
-
-	/**
-	 * only needed to forward the packages to the protocol-parser
-	 */
-	@Override
-	public void onNewPackage(String newPackage) {
-		if (!prot.parseMessage(newPackage))
-			log.warn("unknown command: " + newPackage);
-	}
 	
 	/**
 	 * register or deregister for a certain sensor

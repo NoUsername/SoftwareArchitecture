@@ -23,6 +23,7 @@ public class AdminClientProtocolAbstractor extends ClientProtocolAbstractor impl
 		m_adminlistener = listener;
 	}
 	
+	@Override
 	public boolean parseMessage(String msg) {
 		if (!super.parseMessage(msg)) {
 			try {

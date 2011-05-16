@@ -30,7 +30,7 @@ public class Sensor {
 	
 	@Override
 	public String toString() {
-		return String.format("Sensor id={0} polling={1}, value={2}, valueType={3}, description={4}", ident, isPolling, data, dataType, description);
+		return String.format("Sensor id=%s polling=%b, value=%f, valueType=%s, description=%s", ident, isPolling, data, dataType, description);
 	}
 
 	/**

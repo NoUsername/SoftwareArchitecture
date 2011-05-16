@@ -10,6 +10,7 @@ public class Protocol {
 	public static final String TYPE_REGISTER = "register";
 	public static final String TYPE_SENSOR = "sensor";
 	public static final String TYPE_SENSORDATA = "data";
+	public static final String TYPE_BYE = "bye";
 	
 	////
 	//// ADMIN MSGS

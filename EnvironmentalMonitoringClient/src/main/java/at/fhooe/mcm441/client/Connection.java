@@ -54,6 +54,7 @@ public class Connection implements IPackageListener {
 	 */
 	@Override
 	public void onNewPackage(String newPackage) {
+		//log.info("server said: " + newPackage);
 		if (!prot.parseMessage(newPackage))
 			log.warn("unknown command: " + newPackage);
 	}
@@ -67,7 +68,14 @@ public class Connection implements IPackageListener {
 	public void registerForSensor(String sensorId, boolean register) {
 		prot.setRegistrationForSensor(sensorId, register);
 	}
-
-
 	
+
+	/**
+	 * shuts down the connection
+	 */
+	public void close() {
+		prot.logoff();
+		client.stop();		
+	}
+
 }

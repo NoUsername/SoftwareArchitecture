@@ -15,6 +15,21 @@
       <scope>runtime</scope>
     </dependencySet>
   </dependencySets>
+  <moduleSets>
+    <moduleSet>
+    
+      <!-- Enable access to all projects in the current multimodule build! -->
+      <useAllReactorProjects>true</useAllReactorProjects>
+      <!-- Now, select which projects to include in this module-set. -->
+      <includes>
+        <include>at.fhooe.mcm441:EnvironmentalMonitoringCommons</include>
+      </includes>
+      <binaries>
+        <outputDirectory>modules/${artifactId}</outputDirectory>
+        <unpack>false</unpack>
+      </binaries>
+    </moduleSet>
+  </moduleSets>
   <files>
     <file>
       <source>src/resources/plugin.png</source>

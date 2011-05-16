@@ -3,10 +3,8 @@ package at.fhooe.mcm441.server.clients;
 import org.slf4j.Logger;
 
 import at.fhooe.mcm441.commons.network.Client;
-import at.fhooe.mcm441.commons.network.IMultiClientNetworkEventsListener;
 import at.fhooe.mcm441.commons.network.IMultiClientNetworkListener;
 import at.fhooe.mcm441.commons.network.MultiClientNetworkService;
-import at.fhooe.mcm441.commons.network.NetworkServiceClient;
 import at.fhooe.mcm441.commons.protocol.ServerProtocolAbstractor;
 import at.fhooe.mcm441.server.preferences.Preferences;
 
@@ -27,9 +25,9 @@ public class ServerNetworkConnection implements IMultiClientNetworkListener {
 	@Override
 	public void onNewPackage(Client from, String newPackage) {
 		
+		log.trace("client " + from.m_id + " said: " + newPackage);
 		m_protocol.parseMessage(from, newPackage);
 		
-		log.info("client " + from.m_id + " said: " + newPackage);
 	}
 
 }

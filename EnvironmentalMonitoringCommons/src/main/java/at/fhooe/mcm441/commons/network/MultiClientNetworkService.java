@@ -50,11 +50,7 @@ public class MultiClientNetworkService {
 	}
 	
 	public void stop() {
-		try {
-			m_sock.close();
-		} catch (Exception e) {
-			log.warn("error while trying to stop.... ", e);
-		}
+		NWUtils.tryClose(m_sock);
 	}
 	
 	private void startServer(int port) {
@@ -63,14 +59,15 @@ public class MultiClientNetworkService {
 			try {
 				curSock = m_sock.accept();
 				final Client clientData = new Client(curSock.getRemoteSocketAddress().toString());
-				NetworkServiceClient realClient = new NetworkServiceClient(curSock, new IPackageListener() {
+				final NetworkServiceClient realClient = new NetworkServiceClient(curSock, new IPackageListener() {
 					@Override
 					public void onNewPackage(final String newPackage) {
 						if (m_update != null)
 							m_update.onNewPackage(clientData, newPackage);
 					}
-				},
-				new IConnectionStatusListener() {
+				}, null); // we set the status listener to null, because we need the realClient object first
+				
+				realClient.setConnectionStatusListener(new IConnectionStatusListener() {
 					@Override
 					public void onConnectionLost() {
 						if (m_eventListener != null)
@@ -78,22 +75,18 @@ public class MultiClientNetworkService {
 					}
 					@Override
 					public void onConnectionEstablished() {
-						// ignored
+						if (m_eventListener != null)
+							m_eventListener.onNewClient(clientData, realClient);
 					}
 				});
-				m_eventListener.onNewClient(clientData, realClient);
+				
 				// call the special package-private method that starts listening
 				// on the configured socket
 				realClient.connectToCurrentSocket();
 				
 			} catch (Exception e1) {
 				log.warn("problem with client", e1);
-				try {
-					if (curSock != null)
-						curSock.close();
-				} catch (Exception e2) {
-					// ignored on purpose
-				}
+				NWUtils.tryClose(curSock);
 			}
 			curSock = null;
 		}

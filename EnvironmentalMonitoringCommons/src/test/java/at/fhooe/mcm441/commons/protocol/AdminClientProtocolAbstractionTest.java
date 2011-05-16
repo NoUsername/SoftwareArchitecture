@@ -24,9 +24,9 @@ public class AdminClientProtocolAbstractionTest extends TestCase {
 	
 	public void testClientConnected() {
 		prot.parseMessage(testMsg1);
-		assertNotNull(listener.lastClient);
-		assertEquals(listener.lastClient.m_id, "someclient");
-		assertEquals(listener.lastClient.m_address, "10.0.0.1");		
+		assertNotNull(TestAdminClientSideListener.lastClient);
+		assertEquals(TestAdminClientSideListener.lastClient.m_id, "someclient");
+		assertEquals(TestAdminClientSideListener.lastClient.m_address, "10.0.0.1");		
 	}
 	
 	public void testSetSensorConf() {

@@ -20,5 +20,10 @@ public class ServerClient {
 	public IMessageSender getClientConnection() {
 		return m_con;
 	}
+	
+	public void tryClose() {
+		if (m_con != null)
+			m_con.stop();
+	}
 
 }

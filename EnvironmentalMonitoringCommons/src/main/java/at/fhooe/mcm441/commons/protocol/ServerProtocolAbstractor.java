@@ -31,13 +31,14 @@ public class ServerProtocolAbstractor {
 				String sId = data.getString(Protocol.FIELD_SENSORID);
 				boolean activated = data.getBoolean(Protocol.FIELD_YESNO);
 				m_listener.onRegisterForSensor(from, sId, activated);
-				
+			} else if (Protocol.TYPE_BYE.equals(type)) {
+				m_listener.onByeMessage(from);
 			} else {
 				// unknown msg
 				return false;
 			}
 		} catch (JSONException jse) {
-			log.warn("could not parse json", jse);
+			log.warn("could not parse json '" + msg + "'", jse);
 			return false;
 		}
 		return true;
@@ -49,13 +50,26 @@ public class ServerProtocolAbstractor {
 			inner.put(Protocol.FIELD_SENSORID, sensorid);
 			inner.put(Protocol.FIELD_YESNO, visible);
 			if (visible) {
-				inner.put(Protocol.FIELD_VALUETYPE, datatype);
+				inner.put(Protocol.FIELD_DATATYPE, datatype);
 				inner.put(Protocol.FIELD_DESCRIPTION, description);
 			} else {
-				// no longer visible
+				// no longer visible, doesn't need any more data
 			}
 			
 			return Protocol.createJsonContainer(Protocol.TYPE_SENSOR, inner);
+		} catch (JSONException jse) {
+			slog.warn("could not build json", jse);
+			return null;
+		}
+	}
+	
+	public static String createSensorDataMessage(String sensorid, double value) {
+		try {
+			JSONObject inner = new JSONObject();
+			inner.put(Protocol.FIELD_SENSORID, sensorid);
+			inner.put(Protocol.FIELD_VALUE, value);
+			
+			return Protocol.createJsonContainer(Protocol.TYPE_SENSORDATA, inner);
 		} catch (JSONException jse) {
 			slog.warn("could not build json", jse);
 			return null;

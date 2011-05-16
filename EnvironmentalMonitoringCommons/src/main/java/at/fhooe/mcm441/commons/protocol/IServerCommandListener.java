@@ -10,4 +10,6 @@ public interface IServerCommandListener {
 	
 	public void onAdminSensorConfigCommand(Client c, String sensorId, Object conf, Object data);
 	
+	public void onByeMessage(Client c);
+	
 }
