@@ -1,37 +1,57 @@
 package at.fhooe.mcm441.server;
 
 import at.fhooe.mcm441.server.clients.ClientAbstraction;
+import at.fhooe.mcm441.server.preferences.Preferences;
+import at.fhooe.mcm441.server.utility.Definitions;
 
 /**
+ * the main class for the server
  * 
- * @author Paul Klingelhuber
- *
+ * @author Paul Klingelhuber, Manuel Lachberger
+ * 
  */
 public class Server {
-	
+
 	private Server() {
 	}
-	
+
 	private static ClientAbstraction m_clientAbstr;
-	
+
+	private static Preferences m_preferences = null;
+
 	/**
 	 * this should start up the server
 	 */
 	public static void initServer() {
-		
+
 		// probably some steps like:
 		// - read config
 		// - setup settings
 		// - connect to sensors/let sensors connec
 		// - start client abstraction
-		
-		m_clientAbstr = new ClientAbstraction();
+
+		m_clientAbstr = getClientAbstraction();
+		m_preferences = getPreferences();
+
+		// m_preferences.register(Definitions.PREFIX_SENSORS_VISIBILITY,
+		// m_clientAbstr);
+		// inform the client abstraction about changed/new value
+		// m_preferences.addNewPreference(Definitions.PREFIX_SENSORS_VISIBILITY,
+		// "true");
 	}
-	
-	
-	
+
 	public static ClientAbstraction getClientAbstraction() {
+		if (m_clientAbstr == null) {
+			m_clientAbstr = new ClientAbstraction();
+		}
 		return m_clientAbstr;
+	}
+
+	public static Preferences getPreferences() {
+		if (m_preferences == null) {
+			m_preferences = new Preferences();
+		}
+		return m_preferences;
 	}
 
 }
