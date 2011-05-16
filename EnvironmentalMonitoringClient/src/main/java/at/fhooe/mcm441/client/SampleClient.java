@@ -15,11 +15,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 
-import at.fhooe.mcm441.commons.NetworkService;
-import at.fhooe.mcm441.commons.NetworkServiceClient;
-import at.fhooe.mcm441.commons.PackageListener;
+import at.fhooe.mcm441.commons.network.IPackageListener;
+import at.fhooe.mcm441.commons.network.NetworkService;
+import at.fhooe.mcm441.commons.network.NetworkServiceClient;
 
-public class SampleClient implements PackageListener {
+public class SampleClient implements IPackageListener {
 	private final Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass().getName());
 	
 	public static void main(String[] args) {

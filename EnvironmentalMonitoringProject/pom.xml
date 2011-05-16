@@ -8,16 +8,26 @@
   <packaging>pom</packaging>
 
   <name>EnvironmentalMonitoringProject</name>
-
+  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+      
+  	<!-- These properties are only relevant for sonar! -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <sonar.jdbc.url>
+      jdbc:mysql://localhost:3306/sonar?useUnicode=true&amp;characterEncoding=utf8
+    </sonar.jdbc.url>
+    <sonar.jdbc.driverClassName>com.mysql.jdbc.Driver</sonar.jdbc.driverClassName>
+    <sonar.jdbc.username>root</sonar.jdbc.username>
+    <sonar.jdbc.password></sonar.jdbc.password>
+    <sonar.host.url>http://localhost:9000</sonar.host.url>
   </properties>
   
   <modules>
-    <module>../Monitoring</module>
-    <module>../MonitoringCommons</module>
-    <module>../MonitoringClient</module>
-    <module>../MonitoringSensor</module>
+    <module>../EnvironmentalMonitoringServer</module>
+    <module>../EnvironmentalMonitoringCommons</module>
+    <module>../EnvironmentalMonitoringClient</module>
+    <module>../EnvironmentalMonitoringSensors</module>
   </modules>
 
 </project>
