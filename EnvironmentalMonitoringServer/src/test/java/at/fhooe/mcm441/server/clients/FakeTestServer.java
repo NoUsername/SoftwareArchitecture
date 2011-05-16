@@ -9,6 +9,7 @@ import at.fhooe.mcm441.commons.network.NetworkServiceClient;
 import at.fhooe.mcm441.sensor.Sensor;
 import at.fhooe.mcm441.server.clients.ClientAbstraction;
 import at.fhooe.mcm441.server.preferences.Preferences;
+import at.fhooe.mcm441.server.utility.Definitions;
 
 /**
  * Unit test for simple App.
@@ -54,9 +55,9 @@ public class FakeTestServer extends ClientAbstraction
 		log.info("a new client has connected, we send it some fake sensor info");
 		super.onNewClient(data, connection);
 		
-		super.update(Preferences.PREFIX_SENSOR_VISIBILITY + ".sensor1", "true");
-		super.update(Preferences.PREFIX_SENSOR_VISIBILITY + ".sensor2", "true");
-		super.update(Preferences.PREFIX_SENSOR_VISIBILITY + ".sensor5", "true");
+		super.update(Definitions.PREFIX_SENSORS_VISIBILITY + ".sensor1", "true");
+		super.update(Definitions.PREFIX_SENSORS_VISIBILITY + ".sensor2", "true");
+		super.update(Definitions.PREFIX_SENSORS_VISIBILITY + ".sensor5", "true");
 	}
 	
 	@Override

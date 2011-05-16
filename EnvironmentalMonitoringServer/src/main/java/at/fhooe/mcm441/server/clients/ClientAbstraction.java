@@ -13,6 +13,7 @@ import at.fhooe.mcm441.commons.protocol.ServerProtocolAbstractor;
 import at.fhooe.mcm441.sensor.Sensor;
 import at.fhooe.mcm441.server.preferences.IChangeListener;
 import at.fhooe.mcm441.server.preferences.Preferences;
+import at.fhooe.mcm441.server.utility.Definitions;
 
 public class ClientAbstraction implements IChangeListener, IServerCommandListener, IMultiClientNetworkEventsListener {
 	private final Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass().getName());
@@ -85,10 +86,10 @@ public class ClientAbstraction implements IChangeListener, IServerCommandListene
 	 */
 	@Override
 	public void update(String key, String msg) {
-		if (key.startsWith(Preferences.PREFIX_SENSOR_VISIBILITY)) {
+		if (key.startsWith(Definitions.PREFIX_SENSORS_VISIBILITY)) {
 			// notify all clients
 			log.info("a sensor has become (in)visible");
-			String sensorId = key.replace(Preferences.PREFIX_SENSOR_VISIBILITY + ".", "");
+			String sensorId = key.replace(Definitions.PREFIX_SENSORS_VISIBILITY + ".", "");
 			String msgToSend = ServerProtocolAbstractor.createSensorVisibilityMessage(sensorId, "TODO", "TODO", Boolean.parseBoolean(msg));
 			broadcastToAllClients(msgToSend);
 		}
