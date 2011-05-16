@@ -2,6 +2,11 @@ package at.fhooe.mcm441.server.utility;
 
 public class Definitions {
 	// =========================================
+	// PREFERENCES
+	// =========================================
+	public static final String PREFERENCES_FILE = "EnvironmentalMonitoringServer.conf";
+
+	// =========================================
 	// XML
 	// =========================================
 	/**
