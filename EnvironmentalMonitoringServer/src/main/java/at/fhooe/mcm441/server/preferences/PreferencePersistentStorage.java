@@ -7,6 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
+import org.slf4j.Logger;
+
 /**
  * the handler for the persistent preference storage (handles read and write
  * operations)
@@ -16,6 +18,11 @@ import java.util.Properties;
  */
 public class PreferencePersistentStorage {
 
+	/**
+	 * the logger instance that is used for logging
+	 */
+	private final Logger log = org.slf4j.LoggerFactory.getLogger(this
+			.getClass().getName());
 	/**
 	 * specifies the file where the properties are saved
 	 */
@@ -52,11 +59,9 @@ public class PreferencePersistentStorage {
 		if (file != null) {
 			m_properties = new Properties();
 			if (!file.exists()) {
-				// file doesn't exist, create it
-				// TODO: call logger
 				if (!file.createNewFile()) {
-					// not successful -> call logger!
-					// TODO: call logger
+					log.error("PreferencePersistentStorage::Constructor couldn't "
+							+ "create the config file!");
 					return;
 				}
 
@@ -116,10 +121,10 @@ public class PreferencePersistentStorage {
 						.store(new FileOutputStream(m_file),
 								"The properties file for our EnvironmentalMonitoringServer");
 			} catch (FileNotFoundException e) {
-				// TODO LOGGING
+				log.error("PreferencePersistentStorage::saveProperties file couldn't be found! Exception:");
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO LOGGING
+				log.error("PreferencePersistentStorage::saveProperties couldn't write to file! Exception:");
 				e.printStackTrace();
 			}
 		}

@@ -116,9 +116,7 @@ public class Preferences implements INotificationService, IPreferencenWriter,
 				informListeners(prefix, value);
 				return true;
 			} else {
-				// persistent storage, already included in storePersistent
-				// method
-				// TODO: maybe logging
+				// persistent
 				return true;
 			}
 		}
@@ -134,7 +132,14 @@ public class Preferences implements INotificationService, IPreferencenWriter,
 				if (m_configuration.containsKey(prefix)) {
 					// valid!
 					String oldValue = m_configuration.get(prefix);
-					// TODO: call logger and tell that vlaue was overritten
+
+					log.info("Preferences::updatePreferences value overritten for prefix: "
+							+ prefix
+							+ " oldValue: "
+							+ oldValue
+							+ " newValue: "
+							+ value);
+
 					m_configuration.put(prefix, value);
 
 					// now we have to inform the listeners about a change in the
@@ -144,9 +149,7 @@ public class Preferences implements INotificationService, IPreferencenWriter,
 					return true;
 				}
 			} else {
-				// persistent storage, already included in storePersistent
-				// method
-				// TODO: maybe logging
+				// persistent
 				return true;
 			}
 		}
@@ -246,7 +249,9 @@ public class Preferences implements INotificationService, IPreferencenWriter,
 						if (prefix.contains(s)) {
 							// found
 							result = m_listeners.get(s);
-							break;
+							// TODO: try if the break is required here or not:
+							// unit tests
+							// break;
 						}
 					}
 				}
@@ -267,7 +272,10 @@ public class Preferences implements INotificationService, IPreferencenWriter,
 		if (prefix != null && value != null && prefix.length() > 0) {
 			if (m_configuration == null
 					|| !m_configuration.get(prefix).equals(value)) {
-				// TODO: call logger --> not the correct values saved in table!
+				log.warn("Preferences::informListeners there was an error when "
+						+ "trying to save the preferences -> given value is not "
+						+ "the same as the one stored in preferenecs!");
+				//TODO: think about this return --> is it useful
 				// return;
 			}
 			Vector<IChangeListener> listeners = getListenersByPrefix(prefix);
