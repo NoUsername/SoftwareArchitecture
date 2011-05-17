@@ -6,14 +6,13 @@ import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
+import org.slf4j.Logger;
+
 import at.fhooe.mcm441.server.utility.Definitions;
 
 /**
  * handles all the preferences and notifies the registered listener in case of
  * updates
- * 
- * TODO: use config file for static values, like server port or sthg like that
- * -> for that we have to set the correct prefix to access it later on
  * 
  * @author Manuel Lachberger
  * 
@@ -21,6 +20,11 @@ import at.fhooe.mcm441.server.utility.Definitions;
 public class Preferences implements INotificationService, IPreferencenWriter,
 		IPreferenceReader {
 
+	/**
+	 * the logger instance that is used for logging
+	 */
+	private final Logger log = org.slf4j.LoggerFactory.getLogger(this
+			.getClass().getName());
 	/**
 	 * all the prefixes that start with this string are persistent, default =
 	 * "server"
@@ -52,10 +56,10 @@ public class Preferences implements INotificationService, IPreferencenWriter,
 			m_persistentStorage = new PreferencePersistentStorage(
 					Definitions.PREFERENCES_FILE);
 		} catch (FileNotFoundException e) {
-			// TODO LOGGING
+			log.error("Preferences::Constructor couldn't find the preferences file --> this shouldn't happen - Exception: ");
 			e.printStackTrace();
 		} catch (IOException e) {
-			// TODO LOGGING
+			log.error("Preferences::Constructor couldn't write the preferences file - Exception: ");
 			e.printStackTrace();
 		}
 	}
@@ -102,9 +106,8 @@ public class Preferences implements INotificationService, IPreferencenWriter,
 			if (!storePersistent(prefix, value)) {
 				// store just temporary -> not persistent
 				if (m_configuration.containsKey(prefix)) {
-					// TODO: call logger to log that configuration was
-					// overwritten
-					// because it already exists!
+					log.info("Preferences::addNewPreference preferences already contains key \""
+							+ prefix + "\" value was overriten");
 				}
 				m_configuration.put(prefix, value);
 
@@ -224,6 +227,9 @@ public class Preferences implements INotificationService, IPreferencenWriter,
 	/**
 	 * get all the subscribed listeners by the prefix
 	 * 
+	 * TODO: make this function faster/better -> not the optimal solution, but
+	 * for first version quite okay
+	 * 
 	 * @param prefix
 	 *            the prefix you want to have the listeners from
 	 * @return a vector of listeners
@@ -232,8 +238,18 @@ public class Preferences implements INotificationService, IPreferencenWriter,
 		Vector<IChangeListener> result = null;
 		if (m_listeners != null && m_listeners.size() > 0 && prefix != null
 				&& prefix.length() > 0) {
-			if (m_listeners.containsKey(prefix)) {
-				result = m_listeners.get(prefix);
+			Enumeration<String> enumeration = m_listeners.keys();
+			if (enumeration != null) {
+				while (enumeration.hasMoreElements()) {
+					String s = enumeration.nextElement();
+					if (s != null) {
+						if (prefix.contains(s)) {
+							// found
+							result = m_listeners.get(s);
+							break;
+						}
+					}
+				}
 			}
 		}
 		return result;
@@ -248,8 +264,7 @@ public class Preferences implements INotificationService, IPreferencenWriter,
 	 *            the value for the listeners to inform
 	 */
 	private void informListeners(String prefix, String value) {
-		if (prefix != null && value != null
-				&& prefix.length() > 0) {
+		if (prefix != null && value != null && prefix.length() > 0) {
 			if (m_configuration == null
 					|| !m_configuration.get(prefix).equals(value)) {
 				// TODO: call logger --> not the correct values saved in table!
