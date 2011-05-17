@@ -11,6 +11,7 @@ import at.fhooe.mcm441.commons.network.NetworkServiceClient;
 import at.fhooe.mcm441.commons.protocol.IServerCommandListener;
 import at.fhooe.mcm441.commons.protocol.ServerProtocolAbstractor;
 import at.fhooe.mcm441.sensor.Sensor;
+import at.fhooe.mcm441.server.Server;
 import at.fhooe.mcm441.server.preferences.IChangeListener;
 import at.fhooe.mcm441.server.preferences.Preferences;
 import at.fhooe.mcm441.server.utility.Definitions;
@@ -23,9 +24,13 @@ public class ClientAbstraction implements IChangeListener, IServerCommandListene
 	protected ClientManager m_clients;
 	
 	public ClientAbstraction() {
-		// TODO register @ preferences here!
 		// TODO give the client manager a client-unregistered callback object
 		m_clients = new ClientManager(null);
+		
+		//=================================
+		//REGISTER PREFERENCES
+		//=================================
+		Server.getPreferences().register(Definitions.PREFIX_SENSORS_VISIBILITY, this);
 	}
 	
 	public void startClientAbstraction() {
