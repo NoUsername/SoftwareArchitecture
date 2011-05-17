@@ -13,7 +13,6 @@ import at.fhooe.mcm441.commons.protocol.ServerProtocolAbstractor;
 import at.fhooe.mcm441.sensor.Sensor;
 import at.fhooe.mcm441.server.Server;
 import at.fhooe.mcm441.server.preferences.IChangeListener;
-import at.fhooe.mcm441.server.preferences.Preferences;
 import at.fhooe.mcm441.server.utility.Definitions;
 
 public class ClientAbstraction implements IChangeListener, IServerCommandListener, IMultiClientNetworkEventsListener {

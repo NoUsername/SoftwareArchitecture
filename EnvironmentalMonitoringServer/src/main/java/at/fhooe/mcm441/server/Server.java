@@ -30,8 +30,8 @@ public class Server {
 		// - connect to sensors/let sensors connec
 		// - start client abstraction
 
-		m_clientAbstr = getClientAbstraction();
 		m_preferences = getPreferences();
+		m_clientAbstr = getClientAbstraction();
 
 		// m_preferences.register(Definitions.PREFIX_SENSORS_VISIBILITY,
 		// m_clientAbstr);

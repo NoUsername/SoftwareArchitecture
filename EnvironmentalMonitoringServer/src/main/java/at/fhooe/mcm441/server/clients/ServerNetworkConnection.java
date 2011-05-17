@@ -7,7 +7,6 @@ import at.fhooe.mcm441.commons.network.IMultiClientNetworkListener;
 import at.fhooe.mcm441.commons.network.MultiClientNetworkService;
 import at.fhooe.mcm441.commons.protocol.ServerProtocolAbstractor;
 import at.fhooe.mcm441.server.Server;
-import at.fhooe.mcm441.server.preferences.Preferences;
 import at.fhooe.mcm441.server.utility.Definitions;
 
 public class ServerNetworkConnection implements IMultiClientNetworkListener {

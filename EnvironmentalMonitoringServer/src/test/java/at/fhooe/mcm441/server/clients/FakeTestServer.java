@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import at.fhooe.mcm441.commons.network.Client;
 import at.fhooe.mcm441.commons.network.NetworkServiceClient;
 import at.fhooe.mcm441.sensor.Sensor;
+import at.fhooe.mcm441.server.Server;
 import at.fhooe.mcm441.server.clients.ClientAbstraction;
 import at.fhooe.mcm441.server.preferences.Preferences;
 import at.fhooe.mcm441.server.utility.Definitions;
@@ -55,9 +56,23 @@ public class FakeTestServer extends ClientAbstraction
 		log.info("a new client has connected, we send it some fake sensor info");
 		super.onNewClient(data, connection);
 		
-		super.update(Definitions.PREFIX_SENSORS_VISIBILITY + ".sensor1", "true");
-		super.update(Definitions.PREFIX_SENSORS_VISIBILITY + ".sensor2", "true");
-		super.update(Definitions.PREFIX_SENSORS_VISIBILITY + ".sensor5", "true");
+		String s1 = Definitions.PREFIX_SENSORS_VISIBILITY + ".sensor1";
+		String s2 = Definitions.PREFIX_SENSORS_VISIBILITY + ".sensor2";
+		String s3 = Definitions.PREFIX_SENSORS_VISIBILITY + ".sensor5";
+		
+		Preferences p = Server.getPreferences();
+		if (p.getValue(s1) == null) {
+			log.info("adding preferences");
+			p.addNewPreference(s1, "true");
+			p.addNewPreference(s2, "true");
+			p.addNewPreference(s3, "true");
+		} else {
+			log.info("updating preferences");
+			p.updatePreference(s1, "true");
+			p.updatePreference(s2, "true");
+			p.updatePreference(s3, "true");
+		}
+		
 	}
 	
 	@Override

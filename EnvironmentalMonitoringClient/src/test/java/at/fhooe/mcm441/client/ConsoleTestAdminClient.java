@@ -28,8 +28,11 @@ public class ConsoleTestAdminClient implements IAdminClientSideListener,
 	private Boolean connected = null;
 
 	public static void main(String[] args) throws Exception {
-		//new ConsoleTestAdminClient(true, 0);
-		hardCoreTest();
+		if (true) {
+			new ConsoleTestAdminClient(true, 0);
+		} else {
+			hardCoreTest();
+		}
 	}
 	
 	public static void hardCoreTest() throws Exception {
@@ -80,9 +83,9 @@ public class ConsoleTestAdminClient implements IAdminClientSideListener,
 
 	@Override
 	public void onSensorActivated(Sensor s) {
-		//log.info("sensor activated: " + s);
+		log.info("sensor activated: " + s);
 		if (m_autoRegister) {
-			//log.info("automatically registering for sensor!");
+			log.info("automatically registering for sensor!");
 			if (!m_sensors.contains(s.ident)) {
 				m_con.registerForSensor(s.ident, true);
 				m_sensors.add(s.ident);
@@ -99,7 +102,7 @@ public class ConsoleTestAdminClient implements IAdminClientSideListener,
 
 	@Override
 	public void onNewSensorData(String sensorId, double value) {
-		//log.info("sensordata " + sensorId + " " + value);
+		log.info("sensordata " + sensorId + " " + value);
 	}
 
 	@Override
