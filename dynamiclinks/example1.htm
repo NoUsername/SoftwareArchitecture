@@ -1,0 +1,35 @@
+﻿<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Demo Site 1</title>
+  </head>
+  <body>
+    
+    <!-- the follogin part is where the magic happens for getting all the current page-links -->
+    
+    <script src="jq.js"></script>
+    <script>
+    
+      function callback(data, textStatus, jqXHR) {
+        $('#links').html(data);
+      }
+      
+      function reloadLinks() {
+        jQuery.get("./linkprovider.php", "", callback, "html");
+        setTimeout(reloadLinks, 5000);
+      }
+    
+      $(document).ready(function(){
+          setTimeout(reloadLinks, 5);
+      });
+      
+    </script>
+    
+    <div id="links">
+    
+    </div>
+    
+    <!-- end of important part for link-making -->
+    
+  </body>
+</html>

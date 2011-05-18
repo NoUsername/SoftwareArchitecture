@@ -31,30 +31,30 @@ public class SensorApp implements IPackageListener
 	}
     
     /** connection */
-    private NetworkServiceClient client;
+    private NetworkServiceClient m_client;
     /** if false, data gets pushed */
-    boolean isPoll = false;
+    private boolean m_isPoll = false;
     /** descriptive text */
-    String description = "Some sensor";
+    private String m_description = "Some sensor";
     /** the datatype */
-    String datatype = "°C";
+    private String m_datatype = "°C";
     /** how long to wait between data pushes */
-    int pushWaitTime = 1000;
+    private int m_pushWaitTime = 1000;
     /** used for random stuff */
-    Random r = new Random();
+    private Random m_r = new Random();
     
 	public SensorApp() throws Exception {
-		client = new NetworkServiceClient(this);
-		client.connectAndStart(InetAddress.getByName("localhost"), 5555);
+		m_client = new NetworkServiceClient(this);
+		m_client.connectAndStart(InetAddress.getByName("localhost"), 5555);
 		
-		isPoll = r.nextBoolean();
+		m_isPoll = m_r.nextBoolean();
 		
-		String startMsg = SensorProtocol.createSensorInfoMsg(description, datatype, isPoll);
+		String startMsg = SensorProtocol.createSensorInfoMsg(m_description, m_datatype, m_isPoll);
 		
-		client.sendMessage(startMsg);
+		m_client.sendMessage(startMsg);
 		
-		if (!isPoll) {
-			pushWaitTime = 500 + r.nextInt(2000);
+		if (!m_isPoll) {
+			m_pushWaitTime = 500 + m_r.nextInt(2000);
 			// start pushing thread
 			new Thread(new Runnable() {
 				@Override
@@ -62,7 +62,7 @@ public class SensorApp implements IPackageListener
 					pushData();
 				}
 			}).start();
-			log.info("started pushing sensor with push intervall of " + pushWaitTime);
+			log.info("started pushing sensor with push intervall of " + m_pushWaitTime);
 		} else {
 			log.info("started polling sensor...");
 		}
@@ -76,7 +76,7 @@ public class SensorApp implements IPackageListener
 	@Override
 	public void onNewPackage(String newPackage) {
 		String dataMsg = SensorProtocol.createSensorDataMsg(getData());
-		client.sendMessage(dataMsg);
+		m_client.sendMessage(dataMsg);
 	}
 	
 	/**
@@ -84,7 +84,7 @@ public class SensorApp implements IPackageListener
 	 * @return
 	 */
 	private double getData() {
-		return r.nextDouble();
+		return m_r.nextDouble();
 	}
 	
 	/**
@@ -93,8 +93,8 @@ public class SensorApp implements IPackageListener
 	private void pushData() {
 		while (true) {
 			String dataMsg = SensorProtocol.createSensorDataMsg(getData());
-			client.sendMessage(dataMsg);
-			Util.sleep(pushWaitTime);
+			m_client.sendMessage(dataMsg);
+			Util.sleep(m_pushWaitTime);
 		}
 	}
 	
