@@ -3,6 +3,11 @@ package at.fhooe.mcm441.commons.protocol;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * Definitions for our data-format (protocol)
+ * 
+ * @author Paul Klingelhuber
+ */
 public class Protocol {
 	private Protocol() {}
 	
@@ -34,7 +39,16 @@ public class Protocol {
 	public static final String FIELD_NAME = "name";
 	public static final String FIELD_CONFID = "confid";
 	
-	
+	/**
+	 * create a wrapper around the data, the data json object will
+	 * get put into the whole json object under the key "data", the method
+	 * will be set for the key "type"  
+	 * 
+	 * @param method
+	 * @param data
+	 * @return
+	 * @throws JSONException
+	 */
 	public static String createJsonContainer(String method, JSONObject data) throws JSONException {
 		JSONObject json = new JSONObject();
 		json.put(Protocol.TYPE, method);

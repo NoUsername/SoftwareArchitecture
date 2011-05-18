@@ -15,12 +15,23 @@ import at.fhooe.mcm441.commons.network.Client;
 public class SensorProtocol {
 	private final Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass().getName());
 	
+	/** gets informed about valid messages when parsing */
 	private ISensorProtocolListener m_listener = null;
 	
+	/**
+	 * 
+	 * @param listener gets informed about valid messages when parsing
+	 */
 	public SensorProtocol(ISensorProtocolListener listener) {
 		m_listener = listener;
 	}
-		
+	
+	/**
+	 * parses a message and informs the listener about valid ones
+	 * @param from
+	 * @param msg
+	 * @return
+	 */
 	public boolean parseMessage(Client from, String msg) {
 		try {
 			if ("".equals(msg)) {

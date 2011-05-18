@@ -22,36 +22,40 @@ import at.fhooe.mcm441.server.Server;
 import at.fhooe.mcm441.server.preferences.Preferences;
 import at.fhooe.mcm441.server.utility.Definitions;
 
-
-public class SensorManager implements IMultiClientNetworkListener, IMultiClientNetworkEventsListener, ISensorProtocolListener, IPoolObserver {
-	class ServerSensor {
-		public ServerSensor(Sensor sensor, NetworkServiceClient con) {
-			super();
-			this.sensor = sensor;
-			this.con = con;
-		}
-		public Sensor sensor;
-		public NetworkServiceClient con;
-		public long nextPolling = 0;
-	}
-	
+/**
+ * Abstracts the sensor connection
+ * 
+ * Opens a serversocket to which sensors can connect to
+ * 
+ * when new sensors are connected and have sent their information, the new sensor will be announced
+ * 
+ * this class also takes care of polling and takes into account the current polling times set in the
+ * preferences
+ * 
+ * @author Paul Klingelhuber
+ */
+public class SensorManager implements IMultiClientNetworkListener, IMultiClientNetworkEventsListener,
+		ISensorProtocolListener, IPoolObserver {
 	private final Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass().getName());
-	
-	List<ServerSensor> pollSensors = new ArrayList<ServerSensor>();
-	
-	Map<String, ServerSensor> sensors = new Hashtable<String, ServerSensor>();
-	
-	private SensorProtocol protocol = new SensorProtocol(this);
-	
-	private Preferences prefs = null;
-	
+
+	/** preferences-prefix for polling time, the sensor-id will be appended */
 	private static final String POLLTIME = Definitions.PREFIX_SENSORS_POLLTIME + Definitions.PREFIX_SEPERATOR;
-	
+	/** all sensors that have to be polled */
+	List<ServerSensor> pollSensors = new ArrayList<ServerSensor>();
+	/** to get sensor objects by their id */
+	Map<String, ServerSensor> sensors = new Hashtable<String, ServerSensor>();
+	/** protocol, for processing and creating appropriate messages */
+	private SensorProtocol protocol = new SensorProtocol(this);
+	/** preferences class, so that we don't have to retrieve it everytime */
+	private Preferences prefs = null;
+	/** as long as this is true, the polling will take place */
 	private boolean m_running = true;
-	
+	/** our threadpool for polling */
 	private PooledExecutor executor;
 	
-	
+	/**
+	 * constructor, will also already start everything
+	 */
 	public SensorManager() {
 		MultiClientNetworkService server = new MultiClientNetworkService(this, this);
 		String sPort = Server.getPreferences().getValue(Definitions.PREFIX_SERVER_SENSORS_PORT);
@@ -69,6 +73,9 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 		t.start();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onNewClient(Client c, NetworkServiceClient sc) {
 		Sensor s = new Sensor(c.m_id, "", false, 0.0, "");
@@ -76,6 +83,9 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 		sensors.put(c.m_id, new ServerSensor(s, sc));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onClientDisconnectes(Client c) {
 		ServerSensor container = null;
@@ -94,6 +104,9 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onNewPackage(Client from, String newPackage) { 
 		protocol.parseMessage(from, newPackage);
@@ -118,6 +131,9 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 		
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onSensorData(Client c, double data) {
 		ServerSensor container = sensors.get(c.m_id);
@@ -153,9 +169,26 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void onQueueLimitReached(int currentSize) {
 		log.warn("thread pool queue overfull: " + currentSize);
+	}
+	
+	/**
+	 * internal data-container for storing sensors and the network connections
+	 */
+	class ServerSensor {
+		public ServerSensor(Sensor sensor, NetworkServiceClient con) {
+			super();
+			this.sensor = sensor;
+			this.con = con;
+		}
+		public Sensor sensor;
+		public NetworkServiceClient con;
+		public long nextPolling = 0;
 	}
 	
 }

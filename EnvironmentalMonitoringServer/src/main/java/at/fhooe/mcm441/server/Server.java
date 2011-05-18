@@ -38,6 +38,8 @@ public class Server {
 		m_sensorManager = getSensorManager();
 		
 		m_clientAbstr = getClientAbstraction();
+		
+		m_clientAbstr.startClientAbstraction();
 
 		// m_preferences.register(Definitions.PREFIX_SENSORS_VISIBILITY,
 		// m_clientAbstr);
