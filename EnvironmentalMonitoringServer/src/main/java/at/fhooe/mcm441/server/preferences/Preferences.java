@@ -29,7 +29,7 @@ public class Preferences implements INotificationService, IPreferencenWriter,
 	 * all the prefixes that start with this string are persistent, default =
 	 * "server"
 	 */
-	public static String PERSISTENT_PREFIX_GROUP = Definitions.PREFIX_SERVER;
+	public static final String PERSISTENT_PREFIX_GROUP = Definitions.PREFIX_SERVER;
 	/**
 	 * the persistent storage that handles the read and write operations for the
 	 * preferences file

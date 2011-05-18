@@ -3,6 +3,7 @@ package at.fhooe.mcm441.server;
 import at.fhooe.mcm441.server.clients.ClientAbstraction;
 import at.fhooe.mcm441.server.clients.ClientAbstractionPooled;
 import at.fhooe.mcm441.server.preferences.Preferences;
+import at.fhooe.mcm441.server.sensors.SensorManager;
 
 /**
  * the main class for the server
@@ -15,8 +16,10 @@ public class Server {
 	private Server() {
 	}
 
-	private static ClientAbstraction m_clientAbstr;
+	private static ClientAbstraction m_clientAbstr = null;
 
+	private static SensorManager m_sensorManager = null;
+	
 	private static Preferences m_preferences = null;
 
 	/**
@@ -31,6 +34,9 @@ public class Server {
 		// - start client abstraction
 
 		m_preferences = getPreferences();
+		
+		m_sensorManager = getSensorManager();
+		
 		m_clientAbstr = getClientAbstraction();
 
 		// m_preferences.register(Definitions.PREFIX_SENSORS_VISIBILITY,
@@ -39,6 +45,14 @@ public class Server {
 		// m_preferences.addNewPreference(Definitions.PREFIX_SENSORS_VISIBILITY,
 		// "true");
 	}
+	
+	public static SensorManager getSensorManager() {
+		if (m_sensorManager == null) {
+			m_sensorManager = new SensorManager();
+		}
+		return m_sensorManager;
+	}
+
 
 	public static ClientAbstraction getClientAbstraction() {
 		if (m_clientAbstr == null) {

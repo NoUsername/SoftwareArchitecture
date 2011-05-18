@@ -43,8 +43,26 @@ public class Definitions {
 	public static final String PREFIX_SENSORS_VISIBILITY = PREFIX_SENSORS
 			+ PREFIX_SEPERATOR + "visibility";
 	/**
+	 * the prefix for the sensor polling time
+	 */
+	public static final String PREFIX_SENSORS_POLLTIME = PREFIX_SENSORS
+		+ PREFIX_SEPERATOR + "polltime";
+	/**
 	 * the prefix for the server port
 	 */
 	public static final String PREFIX_SERVER_PORT = PREFIX_SERVER
 			+ PREFIX_SEPERATOR + "port";
+	
+	/**
+	 * the prefix for the server port for the sensors
+	 */
+	public static final String PREFIX_SERVER_SENSORS_PORT = PREFIX_SERVER
+			+ PREFIX_SEPERATOR + "sensorPort";
+	
+	/**
+	 * the prefix for the server port for the sensors
+	 */
+	public static final String PREFIX_SERVER_DEFAULT_POLLING = PREFIX_SERVER
+			+ PREFIX_SEPERATOR + "polltime";
+	
 }

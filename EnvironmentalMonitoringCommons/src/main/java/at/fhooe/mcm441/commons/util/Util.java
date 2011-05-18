@@ -14,7 +14,10 @@ public class Util {
 		while (now < sleepUntil) {
 			now = System.currentTimeMillis();
 			try {
-				Thread.sleep(sleepUntil - now);
+				long sTime = sleepUntil - now;
+				if (sTime > 0) {
+					Thread.sleep(sTime);
+				}
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

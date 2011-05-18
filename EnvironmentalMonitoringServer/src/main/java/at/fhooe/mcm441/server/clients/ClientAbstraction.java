@@ -81,7 +81,7 @@ public class ClientAbstraction implements IChangeListener, IServerCommandListene
 			}
 			sc.tryClose();
 		} else {
-			log.warn("cannot find client " + data.m_id);
+			//log.warn("cannot find client " + data.m_id);
 		}
 	}
 
