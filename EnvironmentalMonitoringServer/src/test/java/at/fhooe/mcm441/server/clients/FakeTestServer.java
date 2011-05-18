@@ -15,7 +15,7 @@ import at.fhooe.mcm441.server.utility.Definitions;
 /**
  * Unit test for simple App.
  */
-public class FakeTestServer extends ClientAbstraction
+public class FakeTestServer extends ClientAbstractionPooled
 {
 	private final Logger log = org.slf4j.LoggerFactory.getLogger(this
 			.getClass().getName());

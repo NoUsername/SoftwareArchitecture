@@ -62,7 +62,8 @@ public class NetworkServiceClient implements IMessageSender {
 	
 	public synchronized boolean sendMessage(String msg) {
 		if (!m_isRunning || m_curSock == null) {
-			log.warn("cannot send sth on a non-running or socketless client");
+			// this log message can clutter up the server console
+			//log.warn("cannot send sth on a non-running or socketless client");
 			return false;
 		}
 		

@@ -20,6 +20,8 @@ public class ConsoleTestAdminClient implements IAdminClientSideListener,
 
 	public static String HOST = "localhost";
 	public static int PORT = 4444;
+	
+	private static final boolean LOGGING = false;
 
 	public AdminConnection m_con;
 	private boolean m_autoRegister = false;
@@ -28,7 +30,7 @@ public class ConsoleTestAdminClient implements IAdminClientSideListener,
 	private Boolean connected = null;
 
 	public static void main(String[] args) throws Exception {
-		if (true) {
+		if (false) {
 			new ConsoleTestAdminClient(true, 0);
 		} else {
 			hardCoreTest();
@@ -73,7 +75,8 @@ public class ConsoleTestAdminClient implements IAdminClientSideListener,
 			new Timer().schedule(new TimerTask() {
 				@Override
 				public void run() {
-					log.info("AUTOMATICALLY DISCONNECTING");
+					if (LOGGING)
+						log.info("AUTOMATICALLY DISCONNECTING");
 					m_con.close();
 				}
 			}, 1000 * disconnectAfterSeconds);
@@ -83,9 +86,11 @@ public class ConsoleTestAdminClient implements IAdminClientSideListener,
 
 	@Override
 	public void onSensorActivated(Sensor s) {
-		log.info("sensor activated: " + s);
+		if (LOGGING)
+			log.info("sensor activated: " + s);
 		if (m_autoRegister) {
-			log.info("automatically registering for sensor!");
+			if (LOGGING)
+				log.info("automatically registering for sensor!");
 			if (!m_sensors.contains(s.ident)) {
 				m_con.registerForSensor(s.ident, true);
 				m_sensors.add(s.ident);
@@ -97,12 +102,14 @@ public class ConsoleTestAdminClient implements IAdminClientSideListener,
 
 	@Override
 	public void onSensorDeactivated(String sensorId) {
-		log.info("sensor " + sensorId + " deactivated");
+		if (LOGGING)
+			log.info("sensor " + sensorId + " deactivated");
 	}
 
 	@Override
 	public void onNewSensorData(String sensorId, double value) {
-		log.info("sensordata " + sensorId + " " + value);
+		if (LOGGING)
+			log.info("sensordata " + sensorId + " " + value);
 	}
 
 	@Override

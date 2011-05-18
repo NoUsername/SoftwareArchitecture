@@ -1,8 +1,8 @@
 package at.fhooe.mcm441.server;
 
 import at.fhooe.mcm441.server.clients.ClientAbstraction;
+import at.fhooe.mcm441.server.clients.ClientAbstractionPooled;
 import at.fhooe.mcm441.server.preferences.Preferences;
-import at.fhooe.mcm441.server.utility.Definitions;
 
 /**
  * the main class for the server
@@ -42,7 +42,7 @@ public class Server {
 
 	public static ClientAbstraction getClientAbstraction() {
 		if (m_clientAbstr == null) {
-			m_clientAbstr = new ClientAbstraction();
+			m_clientAbstr = new ClientAbstractionPooled();
 		}
 		return m_clientAbstr;
 	}

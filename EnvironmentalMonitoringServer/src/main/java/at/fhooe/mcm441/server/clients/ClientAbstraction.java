@@ -99,7 +99,7 @@ public class ClientAbstraction implements IChangeListener, IServerCommandListene
 		}
 	}
 	
-	private void broadcastToAllClients(String msg) {
+	protected void broadcastToAllClients(String msg) {
 		// TODO: implement broadcasting, consider the following:
 		// don't block the caller, because this could take some time
 		// are clients where we lose the connection already handled?
@@ -118,7 +118,7 @@ public class ClientAbstraction implements IChangeListener, IServerCommandListene
 		}
 	}
 	
-	private void sendToClients(List<ServerClient> clients, String msg) {
+	protected void sendToClients(List<ServerClient> clients, String msg) {
 		// TODO: implement broadcasting, consider the following:
 		// don't block the caller, because this could take some time
 		// are clients where we lose the connection already handled?

@@ -24,6 +24,12 @@ public class ServerProtocolAbstractor {
 	
 	public boolean parseMessage(Client from, String msg) {
 		try {
+			if ("".equals(msg)) {
+				// often we get one last empty string when clients disconnect, handle this here
+				m_listener.onByeMessage(from);
+				return true;
+			}
+			
 			JSONObject json = new JSONObject(msg);
 			String type = json.getString("type");
 			JSONObject data = json.getJSONObject("data");
