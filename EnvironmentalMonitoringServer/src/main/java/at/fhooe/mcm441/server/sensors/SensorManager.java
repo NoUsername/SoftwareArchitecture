@@ -40,6 +40,7 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 
 	/** preferences-prefix for polling time, the sensor-id will be appended */
 	private static final String POLLTIME = Definitions.PREFIX_SENSORS_POLLTIME + Definitions.PREFIX_SEPERATOR;
+	private static final String VISIBILITY = Definitions.PREFIX_SENSORS_VISIBILITY + Definitions.PREFIX_SEPERATOR;
 	/** all sensors that have to be polled */
 	List<ServerSensor> pollSensors = new ArrayList<ServerSensor>();
 	/** to get sensor objects by their id */
@@ -101,6 +102,8 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 			}
 			log.info("sensor " + c.m_id + " no longer available");
 			// TODO inform everybody
+			
+			prefs.updatePreference(VISIBILITY + c.m_id, "false");
 		}
 	}
 
@@ -129,6 +132,7 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 		log.info("got new sensor: " + container.sensor);
 		// TODO tell sb about new sensor
 		
+		prefs.addNewPreference(VISIBILITY + c.m_id, "true");
 	}
 
 	/**
@@ -144,6 +148,9 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 		
 		// TODO notify processing unit
 		
+		// TODO this is only a quick test to make it work, normally
+		// this should be done by the processing layer
+		Server.getClientAbstraction().onNewSensorValue(sensor);
 	}
 	
 	private void startPollingThread() {
