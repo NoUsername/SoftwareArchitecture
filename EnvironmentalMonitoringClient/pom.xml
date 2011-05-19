@@ -4,7 +4,7 @@
 
   <groupId>at.fhooe.mcm441.client</groupId>
   <artifactId>EnvironmentalMonitoringClient</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1</version>
   <packaging>jar</packaging>
 
   <name>EnvironmentalMonitoringClient</name>
@@ -33,15 +33,29 @@
   				
   			</configuration>
   		</plugin>
-		<plugin>
-		    <groupId>org.apache.maven.plugins</groupId>
-		    <artifactId>maven-compiler-plugin</artifactId>
-		    <version>2.0.2</version>
-		    <configuration>
-		        <source>1.6</source>
-		        <target>1.6</target>
-		    </configuration>
-		</plugin>
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>at.fhooe.mcm441.client.App</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      
+      <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.0.2</version>
+          <configuration>
+              <source>1.6</source>
+              <target>1.6</target>
+          </configuration>
+      </plugin>
   	</plugins>
   </build>
   
@@ -86,6 +100,7 @@
       <groupId>at.fhooe.mcm441.commons</groupId>
       <artifactId>EnvironmentalMonitoringCommons</artifactId>
       <version>0.0.1</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>

@@ -10,7 +10,6 @@
   <dependencySets>
     <dependencySet>
       <outputDirectory>/</outputDirectory>
-      <useProjectArtifact>true</useProjectArtifact>
       <unpack>true</unpack>
       <scope>runtime</scope>
     </dependencySet>
@@ -23,6 +22,7 @@
       <!-- Now, select which projects to include in this module-set. -->
       <includes>
         <include>*:EnvironmentalMonitoringCommons</include>
+        <include>*:EnvironmentalMonitoringClient</include>
       </includes>
       <binaries>
         <outputDirectory>/</outputDirectory>
@@ -31,10 +31,5 @@
     </moduleSet>
   </moduleSets>
   <files>
-    <file>
-      <source>src/resources/plugin.png</source>
-      <outputDirectory>/resources/</outputDirectory>
-      <filtered>false</filtered>
-    </file>
   </files>
 </assembly>

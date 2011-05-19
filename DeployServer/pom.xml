@@ -15,13 +15,14 @@
         <artifactId>maven-assembly-plugin</artifactId>
         <version>2.2</version> 
         <configuration>
-          <finalName>Client</finalName>
+          <!--<finalName>Client</finalName>-->
+          <finalName>Server</finalName>
           <descriptors>
-            <descriptor>src/resources/dist.xml</descriptor>
+            <descriptor>src/resources/distServer.xml</descriptor>
           </descriptors>
           <archive>
             <manifest>
-              <mainClass>at.fhooe.mcm441.client.SensorManager</mainClass>
+              <mainClass>at.fhooe.mcm441.server.ServerApp</mainClass>
             </manifest>
           </archive>
         </configuration>

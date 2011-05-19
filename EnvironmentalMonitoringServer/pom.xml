@@ -27,7 +27,7 @@
 		        </descriptors>
 		        <archive>
 		          <manifest>
-		            <mainClass>at.fhooe.mcm441.server.App</mainClass>
+		            <mainClass>at.fhooe.mcm441.server.ServerApp</mainClass>
 		          </manifest>
 		        </archive>
   				
