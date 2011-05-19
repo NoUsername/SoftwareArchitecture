@@ -46,23 +46,41 @@ public class Definitions {
 	 * the prefix for the sensor polling time
 	 */
 	public static final String PREFIX_SENSORS_POLLTIME = PREFIX_SENSORS
-		+ PREFIX_SEPERATOR + "polltime";
+			+ PREFIX_SEPERATOR + "polltime";
 	/**
 	 * the prefix for the server port
 	 */
 	public static final String PREFIX_SERVER_PORT = PREFIX_SERVER
 			+ PREFIX_SEPERATOR + "port";
-	
+
 	/**
 	 * the prefix for the server port for the sensors
 	 */
 	public static final String PREFIX_SERVER_SENSORS_PORT = PREFIX_SERVER
 			+ PREFIX_SEPERATOR + "sensorPort";
-	
+
 	/**
 	 * the prefix for the server port for the sensors
 	 */
 	public static final String PREFIX_SERVER_DEFAULT_POLLING = PREFIX_SERVER
 			+ PREFIX_SEPERATOR + "polltime";
-	
+
+	/**
+	 * the prefix for the default number of sensor data till a new file is
+	 * created
+	 */
+	public static final String PREFIX_SERVER_NUMBER_OF_SENSORDATA = PREFIX_SERVER
+			+ PREFIX_SEPERATOR + "numberofsensordata";
+
+	/**
+	 * the prefix for the html output path for the html files
+	 */
+	public static final String PREFIX_SERVER_OUTPUT_PATH_HTML = PREFIX_SERVER
+			+ PREFIX_SEPERATOR + "htmloutputpath";
+
+	/**
+	 * the prefix for the date format output string for the html files
+	 */
+	public static final String PREFIX_SERVER_DATE_FORMAT = PREFIX_SERVER
+			+ PREFIX_SEPERATOR + "filedateformat";
 }

@@ -20,6 +20,8 @@ import at.fhooe.mcm441.commons.util.Util;
 import at.fhooe.mcm441.sensor.Sensor;
 import at.fhooe.mcm441.server.Server;
 import at.fhooe.mcm441.server.preferences.Preferences;
+import at.fhooe.mcm441.server.processing.ISensorDataListener;
+import at.fhooe.mcm441.server.processing.ISensorListenerService;
 import at.fhooe.mcm441.server.utility.Definitions;
 
 /**
@@ -27,20 +29,25 @@ import at.fhooe.mcm441.server.utility.Definitions;
  * 
  * Opens a serversocket to which sensors can connect to
  * 
- * when new sensors are connected and have sent their information, the new sensor will be announced
+ * when new sensors are connected and have sent their information, the new
+ * sensor will be announced
  * 
- * this class also takes care of polling and takes into account the current polling times set in the
- * preferences
+ * this class also takes care of polling and takes into account the current
+ * polling times set in the preferences
  * 
  * @author Paul Klingelhuber
  */
-public class SensorManager implements IMultiClientNetworkListener, IMultiClientNetworkEventsListener,
-		ISensorProtocolListener, IPoolObserver {
-	private final Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass().getName());
+public class SensorManager implements IMultiClientNetworkListener,
+		IMultiClientNetworkEventsListener, ISensorProtocolListener,
+		IPoolObserver{
+	private final Logger log = org.slf4j.LoggerFactory.getLogger(this
+			.getClass().getName());
 
 	/** preferences-prefix for polling time, the sensor-id will be appended */
-	private static final String POLLTIME = Definitions.PREFIX_SENSORS_POLLTIME + Definitions.PREFIX_SEPERATOR;
-	private static final String VISIBILITY = Definitions.PREFIX_SENSORS_VISIBILITY + Definitions.PREFIX_SEPERATOR;
+	private static final String POLLTIME = Definitions.PREFIX_SENSORS_POLLTIME
+			+ Definitions.PREFIX_SEPERATOR;
+	private static final String VISIBILITY = Definitions.PREFIX_SENSORS_VISIBILITY
+			+ Definitions.PREFIX_SEPERATOR;
 	/** all sensors that have to be polled */
 	List<ServerSensor> pollSensors = new ArrayList<ServerSensor>();
 	/** to get sensor objects by their id */
@@ -53,13 +60,18 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 	private boolean m_running = true;
 	/** our threadpool for polling */
 	private PooledExecutor executor;
-	
+	/** the sensor data listener object that should be notified */
+	private List<ISensorDataListener> m_sensorDataListenerList = null;
+
 	/**
 	 * constructor, will also already start everything
 	 */
 	public SensorManager() {
-		MultiClientNetworkService server = new MultiClientNetworkService(this, this);
-		String sPort = Server.getPreferences().getValue(Definitions.PREFIX_SERVER_SENSORS_PORT);
+		MultiClientNetworkService server = new MultiClientNetworkService(this,
+				this);
+		m_sensorDataListenerList = new ArrayList<ISensorDataListener>();
+		String sPort = Server.getPreferences().getValue(
+				Definitions.PREFIX_SERVER_SENSORS_PORT);
 		int port = Integer.parseInt(sPort);
 		server.startListening(port);
 		prefs = Server.getPreferences();
@@ -80,7 +92,7 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 	@Override
 	public void onNewClient(Client c, NetworkServiceClient sc) {
 		Sensor s = new Sensor(c.m_id, "", false, 0.0, "");
-		
+
 		sensors.put(c.m_id, new ServerSensor(s, sc));
 	}
 
@@ -91,7 +103,7 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 	public void onClientDisconnectes(Client c) {
 		ServerSensor container = null;
 		synchronized (sensors) {
-			container = sensors.get(c.m_id);			
+			container = sensors.get(c.m_id);
 		}
 		if (container != null) {
 			synchronized (pollSensors) {
@@ -102,7 +114,7 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 			}
 			log.info("sensor " + c.m_id + " no longer available");
 			// TODO inform everybody
-			
+
 			prefs.updatePreference(VISIBILITY + c.m_id, "false");
 		}
 	}
@@ -111,27 +123,29 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void onNewPackage(Client from, String newPackage) { 
+	public void onNewPackage(Client from, String newPackage) {
 		protocol.parseMessage(from, newPackage);
 	}
 
 	@Override
-	public void onSensorInfo(Client c, String description, String dataType, boolean isPolling) {
+	public void onSensorInfo(Client c, String description, String dataType,
+			boolean isPolling) {
 		ServerSensor container = sensors.get(c.m_id);
 		container.sensor.description = description;
 		container.sensor.dataType = dataType;
 		container.sensor.isPolling = isPolling;
 		if (isPolling) {
 			pollSensors.add(container);
-			String defaultPolling = prefs.getValue(Definitions.PREFIX_SERVER_DEFAULT_POLLING);
+			String defaultPolling = prefs
+					.getValue(Definitions.PREFIX_SERVER_DEFAULT_POLLING);
 			int time = Integer.parseInt(defaultPolling);
 			container.nextPolling = System.currentTimeMillis() + time;
 			prefs.addNewPreference(POLLTIME + c.m_id, defaultPolling);
 		}
-		
+
 		log.info("got new sensor: " + container.sensor);
 		// TODO tell sb about new sensor
-		
+
 		prefs.addNewPreference(VISIBILITY + c.m_id, "true");
 	}
 
@@ -143,34 +157,32 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 		ServerSensor container = sensors.get(c.m_id);
 		Sensor sensor = container.sensor;
 		sensor.data = data;
-		
+
 		log.info("got data from sensor: " + c.m_id + " " + data);
-		
-		// TODO notify processing unit
-		
-		// TODO this is only a quick test to make it work, normally
-		// this should be done by the processing layer
-		Server.getClientAbstraction().onNewSensorValue(sensor);
+
+		// notify processing unit
+		Server.getProcessingManager().onSensorDataReceived(sensor);
 	}
-	
+
 	private void startPollingThread() {
 		while (m_running) {
 			long now = System.currentTimeMillis();
 			synchronized (pollSensors) {
-			for (final ServerSensor s : pollSensors) {
-				if (s.nextPolling < now) {
-					executor.execute(new Runnable() {
-						@Override
-						public void run() {
-							s.con.sendMessage("gimmedata");
-						}
-					}, -1, null);
-					
-					String defaultPolling = prefs.getValue(POLLTIME + s.sensor.ident);
-					int time = Integer.parseInt(defaultPolling);
-					s.nextPolling = now + time;
+				for (final ServerSensor s : pollSensors) {
+					if (s.nextPolling < now) {
+						executor.execute(new Runnable() {
+							@Override
+							public void run() {
+								s.con.sendMessage("gimmedata");
+							}
+						}, -1, null);
+
+						String defaultPolling = prefs.getValue(POLLTIME
+								+ s.sensor.ident);
+						int time = Integer.parseInt(defaultPolling);
+						s.nextPolling = now + time;
+					}
 				}
-			}
 			}
 			Util.sleep(10);
 		}
@@ -183,7 +195,7 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 	public void onQueueLimitReached(int currentSize) {
 		log.warn("thread pool queue overfull: " + currentSize);
 	}
-	
+
 	/**
 	 * internal data-container for storing sensors and the network connections
 	 */
@@ -193,9 +205,9 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 			this.sensor = sensor;
 			this.con = con;
 		}
+
 		public Sensor sensor;
 		public NetworkServiceClient con;
 		public long nextPolling = 0;
 	}
-	
 }

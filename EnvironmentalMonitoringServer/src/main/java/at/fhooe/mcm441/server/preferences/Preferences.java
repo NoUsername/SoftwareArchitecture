@@ -2,8 +2,9 @@ package at.fhooe.mcm441.server.preferences;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Enumeration;
+import java.util.Collection;
 import java.util.Hashtable;
+import java.util.Map;
 import java.util.Vector;
 
 import org.slf4j.Logger;
@@ -38,12 +39,12 @@ public class Preferences implements INotificationService, IPreferencenWriter,
 	/**
 	 * hashtable that stores the listeners according to the prefixes.
 	 */
-	private Hashtable<String, Vector<IChangeListener>> m_listeners = null;
+	private Map<String, Vector<IChangeListener>> m_listeners = null;
 	/**
 	 * stores the prefix-value pairs for the confguration (e.g. sensor.port =
 	 * 4444, sensor.visibility.id5 = true)
 	 */
-	private Hashtable<String, String> m_configuration = null;
+	private Map<String, String> m_configuration = null;
 
 	/**
 	 * default constructor
@@ -56,11 +57,12 @@ public class Preferences implements INotificationService, IPreferencenWriter,
 			m_persistentStorage = new PreferencePersistentStorage(
 					Definitions.PREFERENCES_FILE);
 		} catch (FileNotFoundException e) {
-			log.error("Preferences::Constructor couldn't find the preferences file --> this shouldn't happen - Exception: ");
-			e.printStackTrace();
+			log.error("Preferences::Constructor couldn't find the preferences "
+					+ "file --> this shouldn't happen - Exception: ", e);
 		} catch (IOException e) {
-			log.error("Preferences::Constructor couldn't write the preferences file - Exception: ");
-			e.printStackTrace();
+			log.error(
+					"Preferences::Constructor couldn't write the preferences "
+							+ "file - Exception: ", e);
 		}
 	}
 
@@ -106,8 +108,9 @@ public class Preferences implements INotificationService, IPreferencenWriter,
 			if (!storePersistent(prefix, value)) {
 				// store just temporary -> not persistent
 				if (m_configuration.containsKey(prefix)) {
-					log.info("Preferences::addNewPreference preferences already contains key \""
-							+ prefix + "\" value was overriten");
+					log.info("Preferences::addNewPreference preferences"
+							+ " already contains key \"" + prefix
+							+ "\" value was overriten");
 				}
 				m_configuration.put(prefix, value);
 
@@ -160,10 +163,12 @@ public class Preferences implements INotificationService, IPreferencenWriter,
 	public Vector<String> getAllPrefixes() {
 		if (m_configuration != null && m_configuration.size() > 0) {
 			Vector<String> result = new Vector<String>();
-			Enumeration<String> enume = m_configuration.keys();
-			if (enume != null) {
-				while (enume.hasMoreElements()) {
-					result.add(enume.nextElement());
+			Collection<String> set = m_configuration.keySet();
+			if (set != null) {
+				for (String s : set) {
+					if (s != null) {
+						result.add(s);
+					}
 				}
 				return result;
 			}
@@ -241,10 +246,9 @@ public class Preferences implements INotificationService, IPreferencenWriter,
 		Vector<IChangeListener> result = null;
 		if (m_listeners != null && m_listeners.size() > 0 && prefix != null
 				&& prefix.length() > 0) {
-			Enumeration<String> enumeration = m_listeners.keys();
-			if (enumeration != null) {
-				while (enumeration.hasMoreElements()) {
-					String s = enumeration.nextElement();
+			Collection<String> set = m_listeners.keySet();
+			if (set != null) {
+				for (String s : set) {
 					if (s != null) {
 						if (prefix.contains(s)) {
 							// found
@@ -275,7 +279,7 @@ public class Preferences implements INotificationService, IPreferencenWriter,
 				log.warn("Preferences::informListeners there was an error when "
 						+ "trying to save the preferences -> given value is not "
 						+ "the same as the one stored in preferenecs!");
-				//TODO: think about this return --> is it useful
+				// TODO: think about this return --> is it useful
 				// return;
 			}
 			Vector<IChangeListener> listeners = getListenersByPrefix(prefix);

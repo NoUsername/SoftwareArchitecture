@@ -8,7 +8,6 @@ import at.fhooe.mcm441.commons.network.Client;
 import at.fhooe.mcm441.commons.network.NetworkServiceClient;
 import at.fhooe.mcm441.sensor.Sensor;
 import at.fhooe.mcm441.server.Server;
-import at.fhooe.mcm441.server.clients.ClientAbstraction;
 import at.fhooe.mcm441.server.preferences.Preferences;
 import at.fhooe.mcm441.server.utility.Definitions;
 
@@ -100,10 +99,10 @@ public class FakeTestServer extends ClientAbstractionPooled
 						Thread.sleep(r.nextInt(500));
 					} catch (InterruptedException e) {
 					}
-					super.onNewSensorValue(s);
+					super.onSensorDataReceived(s);
 				}
 			} else {
-				super.onNewSensorValue(s);
+				super.onSensorDataReceived(s);
 			}
 		}
 		if (beReliable) {
