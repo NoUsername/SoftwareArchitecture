@@ -5,3 +5,4 @@ EnvironmentalMonitoringServer/target/*
 EnvironmentalMonitoringServer/.settings
 target
 .settings
+EnvironmentalMonitoringServer/*.log

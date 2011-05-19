@@ -20,8 +20,6 @@ import at.fhooe.mcm441.commons.util.Util;
 import at.fhooe.mcm441.sensor.Sensor;
 import at.fhooe.mcm441.server.Server;
 import at.fhooe.mcm441.server.preferences.Preferences;
-import at.fhooe.mcm441.server.processing.ISensorDataListener;
-import at.fhooe.mcm441.server.processing.ISensorListenerService;
 import at.fhooe.mcm441.server.utility.Definitions;
 
 /**
@@ -58,8 +56,6 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 	private boolean m_running = true;
 	/** our threadpool for polling */
 	private PooledExecutor executor;
-	/** the sensor data listener object that should be notified */
-	private List<ISensorDataListener> m_sensorDataListenerList = null;
 
 	/**
 	 * constructor, will also already start everything
@@ -67,7 +63,6 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 	public SensorManager() {
 		MultiClientNetworkService server = new MultiClientNetworkService(this,
 				this);
-		m_sensorDataListenerList = new ArrayList<ISensorDataListener>();
 		String sPort = Server.getPreferences().getValue(
 				Definitions.PREFIX_SERVER_SENSORS_PORT);
 		int port = Integer.parseInt(sPort);

@@ -5,11 +5,9 @@ import org.slf4j.Logger;
 import at.fhooe.mcm441.commons.util.Util;
 import at.fhooe.mcm441.server.clients.ClientAbstraction;
 import at.fhooe.mcm441.server.clients.ClientAbstractionPooled;
-import at.fhooe.mcm441.server.output.HtmlOutput;
 import at.fhooe.mcm441.server.preferences.Preferences;
-import at.fhooe.mcm441.server.sensors.ISensorStorage;
-import at.fhooe.mcm441.server.processing.ISensorDataListener;
 import at.fhooe.mcm441.server.processing.ProcessingManager;
+import at.fhooe.mcm441.server.sensors.ISensorStorage;
 import at.fhooe.mcm441.server.sensors.SensorManager;
 
 /**
@@ -53,6 +51,8 @@ public class Server {
 		
 		m_clientAbstr.startClientAbstraction();
 		
+		m_processing.register(m_clientAbstr);
+		
 		// periodic status information:
 		while (true) {
 			int clients = m_clientAbstr.getClientCount();
@@ -61,13 +61,6 @@ public class Server {
 			Util.trySleep(5000);
 		}
 
-		m_processing.register(m_clientAbstr);
-
-		// m_preferences.register(Definitions.PREFIX_SENSORS_VISIBILITY,
-		// m_clientAbstr);
-		// inform the client abstraction about changed/new value
-		// m_preferences.addNewPreference(Definitions.PREFIX_SENSORS_VISIBILITY,
-		// "true");
 	}
 	
 	public static ProcessingManager getProcessingManager(){
@@ -77,6 +70,7 @@ public class Server {
 		return m_processing;
 	}
 
+	/*
 	 * the sensor manager isn't public (as sensorManager itself)
 	 */
 	private static SensorManager getSensorManager() {
