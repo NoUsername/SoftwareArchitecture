@@ -89,6 +89,8 @@ public class AdminServerProtocolAbstractor extends ServerProtocolAbstractor {
 		}
 	}
 	
+	
+	
 	public static boolean writeConfigurationToJson(Configuration config, JSONObject json) {
 		try {
 			json.put(Protocol.FIELD_NAME, config.displayName);

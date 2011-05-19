@@ -21,8 +21,9 @@ public class ConsoleTestAdminClient implements IAdminClientSideListener,
 	public static String HOST = "localhost";
 	public static int PORT = 4445;
 	
-	private static final boolean HARDCORETEST = true;
+	private static final boolean HARDCORETEST = false; // if this is true, not one but MANY clients are started
 	private static final boolean LOGGING = !HARDCORETEST;
+	
 	private static final int MIN_STAY_CONNECTED_TIME = 120; // seconds
 	private static final int STARTED_CLIENTS_COUNT = 100;
 	private static final int MIN_STARTING_OFFSET = 100; // milliseconds
@@ -77,14 +78,6 @@ public class ConsoleTestAdminClient implements IAdminClientSideListener,
 		while (connected == null) {
 			Thread.sleep(20);
 		}
-
-		m_con.registerForSensor("sensor-x", true);
-		Thread.sleep(1000);
-		m_con.registerForSensor("sensor-x", false);
-		Thread.sleep(1000);
-		m_con.setSensorConfig("sensor-x", "pollingtime", "100");
-		Thread.sleep(1000);
-		m_con.setServerConfig("server.polltime", "3000");
 		
 		if (disconnectAfterSeconds > 0) {
 			new Timer().schedule(new TimerTask() {

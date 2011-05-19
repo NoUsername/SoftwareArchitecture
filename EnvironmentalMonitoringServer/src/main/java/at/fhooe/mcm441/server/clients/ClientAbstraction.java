@@ -1,7 +1,10 @@
 package at.fhooe.mcm441.server.clients;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 
@@ -26,7 +29,7 @@ public class ClientAbstraction implements IChangeListener, IServerCommandListene
 	
 	protected ClientManager m_clients = null;
 	
-	protected List<Client> m_adminClients = null;
+	protected Map<Client, ServerClient> m_adminClients = null;
 	
 	private Preferences m_prefs;
 	
@@ -37,7 +40,7 @@ public class ClientAbstraction implements IChangeListener, IServerCommandListene
 		// it's used to inform the admin clients about all the current clients
 		m_clients = new ClientManager(cleanClientListener);
 		m_prefs = Server.getPreferences();
-		m_adminClients = new ArrayList<Client>();
+		m_adminClients = new HashMap<Client, ServerClient>();
 		
 		// register at preferences for sensor visibility changes
 		Server.getPreferences().register(Definitions.PREFIX_SENSORS_VISIBILITY, this);
@@ -118,8 +121,9 @@ public class ClientAbstraction implements IChangeListener, IServerCommandListene
 		// also trigger the normal client handling
 		onNewClient(data, connection);
 		
+		ServerClient newAdminClient = new ServerClient(data, connection);
 		synchronized (m_adminClients) {
-			m_adminClients.add(data);
+			m_adminClients.put(data, newAdminClient);
 		}
 		
 		// tell him about all the server configs + send him list of all clients
@@ -129,7 +133,6 @@ public class ClientAbstraction implements IChangeListener, IServerCommandListene
 			List<ServerClient>targets = m_clients.getAllClients();
 			all = new ArrayList<ServerClient>(targets);
 		}
-		ServerClient newAdminClient = new ServerClient(data, connection);
 		
 		String msg = "";
 		// tell him about all the clients that are connected
@@ -149,15 +152,22 @@ public class ClientAbstraction implements IChangeListener, IServerCommandListene
 		// send all invisible sensors as sensor-config items
 		List<Sensor> allSensors = Server.getSensorStorage().getAllSensors();
 		for (Sensor sensor : allSensors) {
-			String sensorsVisibilityKey = VISIBILITY + sensor.ident;
-			String value = m_prefs.getValue(sensorsVisibilityKey);
-			if ("false".equals(value)) {
-				Configuration config = new Configuration("visibility of sensor " + sensor.description, sensorsVisibilityKey, SettingType.bool, "false");
-				msg = AdminServerProtocolAbstractor.createSensorConfigMessage(sensor.ident, config);
-				sendToClient(newAdminClient, msg);
-			}
+			msg = createSensorVisiblityConf(sensor);
+			sendToClient(newAdminClient, msg);
 		}
 		
+	}
+	
+	/**
+	 * this creates a config item for the admin clients which allows them
+	 * to toggle the visibility of a sensor
+	 * @param sensor the sensor
+	 */
+	private String createSensorVisiblityConf(Sensor sensor) {
+		String sensorsVisibilityKey = VISIBILITY + sensor.ident;
+		String value = m_prefs.getValue(sensorsVisibilityKey);
+		Configuration config = new Configuration("visibility of sensor " + sensor.description, sensorsVisibilityKey, SettingType.bool, value);
+		return AdminServerProtocolAbstractor.createSensorConfigMessage(sensor.ident, config);
 	}
 	
 	/**
@@ -184,6 +194,15 @@ public class ClientAbstraction implements IChangeListener, IServerCommandListene
 			if (s != null) {
 				String msgToSend = ServerProtocolAbstractor.createSensorVisibilityMessage(sensorId, s.description, s.dataType, Boolean.parseBoolean(msg));
 				broadcastToAllClients(msgToSend);
+				
+				// create the visibility conf item for the admin clients:
+				String confMsg = createSensorVisiblityConf(s);
+				List<ServerClient> admins = null;
+				synchronized (m_adminClients) {
+					// copy to be thread-safe
+					admins = new ArrayList<ServerClient>(m_adminClients.values());
+				}
+				sendToClients(admins, confMsg);
 			} else {
 				log.warn("we got info about new sensor which isn't really there! id=" + sensorId);
 			}
@@ -209,7 +228,7 @@ public class ClientAbstraction implements IChangeListener, IServerCommandListene
 		}
 	}
 	
-	protected void sendToClients(List<ServerClient> clients, String msg) {
+	protected void sendToClients(Collection<ServerClient> clients, String msg) {
 		// TODO: implement broadcasting, consider the following:
 		// don't block the caller, because this could take some time
 		// are clients where we lose the connection already handled?
@@ -242,7 +261,7 @@ public class ClientAbstraction implements IChangeListener, IServerCommandListene
 			List<Client> admins = null;
 			// copy to avoid threading problems
 			synchronized (m_adminClients) {
-				admins = new ArrayList<Client>(m_adminClients);
+				admins = new ArrayList<Client>(m_adminClients.keySet());
 			}
 			String msg = AdminServerProtocolAbstractor.createClientMessage(c.m_id, c.m_address, registered);
 			// send the client-change to every admin client
