@@ -1,6 +1,5 @@
 package at.fhooe.mcm441.commons.network;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -163,7 +162,7 @@ public class NetworkServiceClient implements IMessageSender {
 			} while (m_isRunning);
 		} catch (Exception e) {
 			if (m_isRunning) {
-				log.warn("problem with client", e);
+				//log.warn("problem with client", e);
 			} else {
 				// an expected error
 			}

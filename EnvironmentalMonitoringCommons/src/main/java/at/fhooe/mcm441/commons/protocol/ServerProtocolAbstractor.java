@@ -16,7 +16,8 @@ public class ServerProtocolAbstractor {
 	private final Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass().getName());
 	private static final Logger slog = org.slf4j.LoggerFactory.getLogger("static" + ServerProtocolAbstractor.class.getName());
 	
-	private IServerCommandListener m_listener;
+	/** successfully parsed command messages are reported to this object */
+	protected IServerCommandListener m_listener;
 	
 	public ServerProtocolAbstractor(IServerCommandListener listener) {
 		m_listener = listener;

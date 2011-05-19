@@ -11,26 +11,29 @@ import at.fhooe.mcm441.commons.Configuration;
 import at.fhooe.mcm441.commons.network.Client;
 import at.fhooe.mcm441.commons.network.IConnectionStatusListener;
 import at.fhooe.mcm441.commons.protocol.IAdminClientSideListener;
+import at.fhooe.mcm441.commons.util.Util;
 import at.fhooe.mcm441.sensor.Sensor;
 
 public class ConsoleTestAdminClient implements IAdminClientSideListener,
 		IConnectionStatusListener {
-	private final Logger log = org.slf4j.LoggerFactory.getLogger(this
-			.getClass().getName());
+	private static final Logger log = org.slf4j.LoggerFactory.getLogger(ConsoleTestAdminClient.class.getName());
 
 	public static String HOST = "localhost";
-	public static int PORT = 4444;
+	public static int PORT = 4445;
 	
-	private static final boolean LOGGING = false;
+	private static final boolean HARDCORETEST = false;
+	private static final boolean LOGGING = !HARDCORETEST;
 
 	public AdminConnection m_con;
 	private boolean m_autoRegister = false;
 	private ArrayList<String> m_sensors = new ArrayList<String>();
 
 	private Boolean connected = null;
+	private static int clientsConnectedCount = 0;
+	private static long msgsReceivedCount = 0;
 
 	public static void main(String[] args) throws Exception {
-		if (false) {
+		if (!HARDCORETEST) {
 			new ConsoleTestAdminClient(true, 0);
 		} else {
 			hardCoreTest();
@@ -38,6 +41,7 @@ public class ConsoleTestAdminClient implements IAdminClientSideListener,
 	}
 	
 	public static void hardCoreTest() throws Exception {
+		long started = System.currentTimeMillis();
 		final Random r = new Random();
 		for (int i=0; i<200; i++) {
 			new Thread(new Runnable() {
@@ -48,9 +52,15 @@ public class ConsoleTestAdminClient implements IAdminClientSideListener,
 						e.printStackTrace();
 					}
 			}}).start();
-			Thread.sleep(r.nextInt(10));
+			Thread.sleep(5+r.nextInt(10));
 			if (i%10 == 0)
 				System.err.println(" WE ARE AT " + i + " of " + 50 + " clients");
+		}
+		for (int i=0; i<10; i++) {
+			Util.sleep(5000);
+			log.info("CLIENTS CONNECTED INFO: " + clientsConnectedCount);
+			log.info("TOTAL MSGS RECEIVED: " + msgsReceivedCount);
+			log.info("IN : " + (System.currentTimeMillis() - started) + " ms");
 		}
 	}
 
@@ -69,7 +79,7 @@ public class ConsoleTestAdminClient implements IAdminClientSideListener,
 		Thread.sleep(1000);
 		m_con.setSensorConfig("sensor-x", "pollingtime", "100");
 		Thread.sleep(1000);
-		m_con.setServerConfig("maxclients", "10");
+		m_con.setServerConfig("server.polltime", "3000");
 		
 		if (disconnectAfterSeconds > 0) {
 			new Timer().schedule(new TimerTask() {
@@ -98,50 +108,64 @@ public class ConsoleTestAdminClient implements IAdminClientSideListener,
 				//log.info("already registered for that sensor");
 			}
 		}
+		msgsReceivedCount++;
 	}
 
 	@Override
 	public void onSensorDeactivated(String sensorId) {
 		if (LOGGING)
 			log.info("sensor " + sensorId + " deactivated");
+		msgsReceivedCount++;
 	}
 
 	@Override
 	public void onNewSensorData(String sensorId, double value) {
 		if (LOGGING)
 			log.info("sensordata " + sensorId + " " + value);
+		msgsReceivedCount++;
 	}
 
 	@Override
 	public void onConnectionEstablished() {
-		log.info("we are connected");
+		if (LOGGING)
+			log.info("we are connected");
 		connected = Boolean.TRUE;
+		clientsConnectedCount++;
 	}
 
 	@Override
 	public void onConnectionLost() {
-		log.info("we got disconnected");
+		if (LOGGING)
+			log.info("we got disconnected");
 		connected = Boolean.FALSE;
 	}
 
 	@Override
 	public void onSensorConfigurationItem(String sensorId, Configuration conf) {
-		log.info("sensor conf item for sensor " + sensorId + " " + conf);
+		if (LOGGING)
+			log.info("sensor conf item for sensor " + sensorId + " " + conf);
+		msgsReceivedCount++;
 	}
 
 	@Override
 	public void onServerConfigurationItem(Configuration conf) {
-		log.info("server conf item " + conf);
+		if (LOGGING)
+			log.info("server conf item " + conf);
+		msgsReceivedCount++;
 	}
 
 	@Override
 	public void onClientConnected(Client client) {
-		log.info("client connected " + client);
+		if (LOGGING)
+			log.info("client connected " + client);
+		msgsReceivedCount++;
 	}
 
 	@Override
 	public void onClientDisconnected(Client client) {
-		log.info("client disconnected " + client);
+		if (LOGGING)
+			log.info("client disconnected " + client);
+		msgsReceivedCount++;
 	}
 
 }

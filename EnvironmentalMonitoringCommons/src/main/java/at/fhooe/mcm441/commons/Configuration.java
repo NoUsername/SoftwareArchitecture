@@ -24,7 +24,7 @@ public class Configuration {
 	
 	@Override
 	public String toString() {
-		return String.format("Conf {0} '{1}' type={2}, value={3}", id, displayName, type, value);
+		return String.format("Conf %s '%s' type=%s, value=%s", id, displayName, type, value);
 	}
 	
 	public String displayName;

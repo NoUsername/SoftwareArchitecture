@@ -27,55 +27,27 @@ public class ClientAbstractionPooled  extends ClientAbstraction implements IPool
 		executor = new PooledExecutor(50, 300, 200, this);
 	}
 	
-	protected void broadcastToAllClients(final String msg) {
-		List<ServerClient> all = null;
-		synchronized (m_clients) {
-			// copy the entries to be reistent to modifications while sending
-			List<ServerClient>targets = m_clients.getAllClients();
-			all = new ArrayList<ServerClient>(targets);
-		}
-		
-		log.info("sending to all clients " + all.size());
-		
-		// if a timeout is reached for a client, we disconnect from it:
-		for (final ServerClient sc : all) {
-			Runnable r = new Runnable() {
-				@Override
-				public void run() {	
-					if (!sc.getClientConnection().sendMessage(msg)) {
-						onClientDisconnectes(sc.getClientInfo());
-					}
-				}
-			};
-			executor.execute(r, -1, new ITimeout() {
-				@Override
-				public void timedOut() {
-					onClientDisconnectes(sc.getClientInfo());
-				}
-			});
-		}
-	}
 	
 	@Override
-	protected void sendToClients(List<ServerClient> clients, final String msg) {
+	protected void sendToClient(final ServerClient client, final String msg) {
+		if (client == null)
+			return;
 		
-		for (final ServerClient sc : clients) {
-			Runnable r = new Runnable() {
-				@Override
-				public void run() {	
-					if (!sc.getClientConnection().sendMessage(msg)) {
-						onClientDisconnectes(sc.getClientInfo());
-					}
+		Runnable r = new Runnable() {
+			@Override
+			public void run() {	
+				if (!client.getClientConnection().sendMessage(msg)) {
+					onClientDisconnectes(client.getClientInfo());
 				}
-			};
-			
-			executor.execute(r, -1, new ITimeout() {
-				@Override
-				public void timedOut() {
-					onClientDisconnectes(sc.getClientInfo());
-				}
-			});
-		}
+			}
+		};
+		
+		executor.execute(r, -1, new ITimeout() {
+			@Override
+			public void timedOut() {
+				onClientDisconnectes(client.getClientInfo());
+			}
+		});
 	}
 
 	@Override

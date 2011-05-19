@@ -13,9 +13,9 @@ public interface IServerCommandListener {
 	
 	public void onRegisterForSensor(Client c,  String sensorId, boolean status);
 	
-	public void onAdminConfigCommand(Client c, Object conf, Object data);
+	public void onAdminConfigCommand(Client c, String configId, String newValue);
 	
-	public void onAdminSensorConfigCommand(Client c, String sensorId, Object conf, Object data);
+	public void onAdminSensorConfigCommand(Client c, String sensorId, String configId, String newValue);
 	
 	public void onByeMessage(Client c);
 	

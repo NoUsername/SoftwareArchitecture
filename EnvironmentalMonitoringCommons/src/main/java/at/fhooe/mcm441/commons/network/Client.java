@@ -23,6 +23,6 @@ public class Client {
 	
 	@Override
 	public String toString() {
-		return String.format("Client {0} from {1}", m_id, m_address);
+		return String.format("Client %s from %s", m_id, m_address);
 	}
 }
