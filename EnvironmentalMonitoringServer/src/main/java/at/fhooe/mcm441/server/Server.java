@@ -1,8 +1,12 @@
 package at.fhooe.mcm441.server;
 
+import org.slf4j.Logger;
+
+import at.fhooe.mcm441.commons.util.Util;
 import at.fhooe.mcm441.server.clients.ClientAbstraction;
 import at.fhooe.mcm441.server.clients.ClientAbstractionPooled;
 import at.fhooe.mcm441.server.preferences.Preferences;
+import at.fhooe.mcm441.server.sensors.ISensorStorage;
 import at.fhooe.mcm441.server.sensors.SensorManager;
 
 /**
@@ -12,6 +16,7 @@ import at.fhooe.mcm441.server.sensors.SensorManager;
  * 
  */
 public class Server {
+	private static final Logger log = org.slf4j.LoggerFactory.getLogger(Server.class.getName());
 
 	private Server() {
 	}
@@ -40,6 +45,14 @@ public class Server {
 		m_clientAbstr = getClientAbstraction();
 		
 		m_clientAbstr.startClientAbstraction();
+		
+		// periodic status information:
+		while (true) {
+			int clients = m_clientAbstr.getClientCount();
+			int sensors = m_sensorManager.getAllSensors().size();
+			log.info("there are currently " + clients + " clients connected and " + sensors + " sensors available");
+			Util.trySleep(5000);
+		}
 
 		// m_preferences.register(Definitions.PREFIX_SENSORS_VISIBILITY,
 		// m_clientAbstr);
@@ -48,13 +61,15 @@ public class Server {
 		// "true");
 	}
 	
-	public static SensorManager getSensorManager() {
+	/**
+	 * the sensor manager isn't public (as sensorManager itself)
+	 */
+	private static SensorManager getSensorManager() {
 		if (m_sensorManager == null) {
 			m_sensorManager = new SensorManager();
 		}
 		return m_sensorManager;
 	}
-
 
 	public static ClientAbstraction getClientAbstraction() {
 		if (m_clientAbstr == null) {
@@ -68,6 +83,17 @@ public class Server {
 			m_preferences = new Preferences();
 		}
 		return m_preferences;
+	}
+	
+	/******
+	 * PUBLIC ACCESSOR METHODS:
+	 *******/
+	
+	/**
+	 * from here you get information about all the sensors that we have
+	 */
+	public static ISensorStorage getSensorStorage() {
+		return m_sensorManager;
 	}
 
 }

@@ -5,6 +5,7 @@ import java.util.Random;
 
 import org.slf4j.Logger;
 
+import at.fhooe.mcm441.commons.network.IConnectionStatusListener;
 import at.fhooe.mcm441.commons.network.IPackageListener;
 import at.fhooe.mcm441.commons.network.NetworkServiceClient;
 import at.fhooe.mcm441.commons.protocol.SensorProtocol;
@@ -17,7 +18,7 @@ import at.fhooe.mcm441.commons.util.Util;
  * push sensors choose their pushing time also by random
  *
  */
-public class SensorApp implements IPackageListener
+public class SensorApp implements IPackageListener, IConnectionStatusListener
 {
 	private final Logger log = org.slf4j.LoggerFactory.getLogger(this
 			.getClass().getName());
@@ -42,9 +43,11 @@ public class SensorApp implements IPackageListener
     private int m_pushWaitTime = 1000;
     /** used for random stuff */
     private Random m_r = new Random();
+    /** as long as this is true, the sensor runs */
+    private boolean m_running = true;
     
 	public SensorApp() throws Exception {
-		m_client = new NetworkServiceClient(this);
+		m_client = new NetworkServiceClient(this, this);
 		m_client.connectAndStart(InetAddress.getByName("localhost"), 5555);
 		
 		m_isPoll = m_r.nextBoolean();
@@ -91,12 +94,22 @@ public class SensorApp implements IPackageListener
 	 * infinite loop which pushes the data
 	 */
 	private void pushData() {
-		while (true) {
+		while (m_running) {
 			String dataMsg = SensorProtocol.createSensorDataMsg(getData());
 			m_client.sendMessage(dataMsg);
 			Util.sleep(m_pushWaitTime);
 		}
 	}
-	
+
+	@Override
+	public void onConnectionEstablished() {
+		log.info("connection successfully established");
+	}
+
+	@Override
+	public void onConnectionLost() {
+		log.warn("we lost the connection, maybe the server shut down. Quitting...");
+		m_running = false;
+	}
 	
 }

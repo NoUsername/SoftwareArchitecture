@@ -23,5 +23,18 @@ public class Util {
 			}
 		}
 	}
+	
+	
+	/**
+	 * simple sleep without the exceptions etc, if interrupted
+	 * it will simply return, no more sleeps will be attempted
+	 * @param milliseconds
+	 */
+	public static final void trySleep(long milliseconds) {
+		try {
+			Thread.sleep(milliseconds);
+		} catch (InterruptedException e) {
+		}
+	}
 
 }

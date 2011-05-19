@@ -21,8 +21,11 @@ public class ConsoleTestAdminClient implements IAdminClientSideListener,
 	public static String HOST = "localhost";
 	public static int PORT = 4445;
 	
-	private static final boolean HARDCORETEST = false;
+	private static final boolean HARDCORETEST = true;
 	private static final boolean LOGGING = !HARDCORETEST;
+	private static final int MIN_STAY_CONNECTED_TIME = 120; // seconds
+	private static final int STARTED_CLIENTS_COUNT = 100;
+	private static final int MIN_STARTING_OFFSET = 100; // milliseconds
 
 	public AdminConnection m_con;
 	private boolean m_autoRegister = false;
@@ -43,19 +46,21 @@ public class ConsoleTestAdminClient implements IAdminClientSideListener,
 	public static void hardCoreTest() throws Exception {
 		long started = System.currentTimeMillis();
 		final Random r = new Random();
-		for (int i=0; i<200; i++) {
+		for (int i=0; i<STARTED_CLIENTS_COUNT; i++) {
 			new Thread(new Runnable() {
 				public void run() {
 					try {
-						new ConsoleTestAdminClient(true, 10 + r.nextInt(8));
+						new ConsoleTestAdminClient(true, MIN_STAY_CONNECTED_TIME + r.nextInt(8));
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 			}}).start();
-			Thread.sleep(5+r.nextInt(10));
+			Thread.sleep(MIN_STARTING_OFFSET+r.nextInt(10));
 			if (i%10 == 0)
 				System.err.println(" WE ARE AT " + i + " of " + 50 + " clients");
 		}
+		
+		// log status:
 		for (int i=0; i<10; i++) {
 			Util.sleep(5000);
 			log.info("CLIENTS CONNECTED INFO: " + clientsConnectedCount);

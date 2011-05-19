@@ -30,6 +30,8 @@ public class ClientAbstraction implements IChangeListener, IServerCommandListene
 	
 	private Preferences m_prefs;
 	
+	private static final String VISIBILITY = Definitions.PREFIX_SENSORS_VISIBILITY + Definitions.PREFIX_SEPERATOR;
+	
 	public ClientAbstraction() {
 		// this callback for the ClientManager only triggers when there is a real change in the client-list
 		// it's used to inform the admin clients about all the current clients
@@ -74,8 +76,20 @@ public class ClientAbstraction implements IChangeListener, IServerCommandListene
 	 */
 	@Override
 	public void onNewClient(Client data, NetworkServiceClient connection) {
-		m_clients.addClient(new ServerClient(data, connection));
-		// TODO tell him about all our sensors
+		ServerClient sc = new ServerClient(data, connection);
+		m_clients.addClient(sc);
+				
+		List<Sensor> allSensors = Server.getSensorStorage().getAllSensors();
+		
+		for (Sensor sensor : allSensors) {
+			String value = m_prefs.getValue(VISIBILITY + sensor.ident);
+			if ("true".equals(value)) {
+				String msg = ServerProtocolAbstractor.createSensorVisibilityMessage(sensor.ident, sensor.description, sensor.dataType, true);
+				sendToClient(sc, msg);
+				log.info("there is a visible sensor...");
+			}
+		}
+		
 	}
 	
 	/**
@@ -104,8 +118,11 @@ public class ClientAbstraction implements IChangeListener, IServerCommandListene
 		// also trigger the normal client handling
 		onNewClient(data, connection);
 		
-		// tell him about all the server configs + send him list of all clients
+		synchronized (m_adminClients) {
+			m_adminClients.add(data);
+		}
 		
+		// tell him about all the server configs + send him list of all clients
 		List<ServerClient> all = null;
 		synchronized (m_clients) {
 			// copy the entries to be reistent to modifications while sending
@@ -128,9 +145,19 @@ public class ClientAbstraction implements IChangeListener, IServerCommandListene
 		msg = AdminServerProtocolAbstractor.createConfigMessage(new Configuration("default polling time: ", pollTimeKey, SettingType.number, pollTimeValue));
 		sendToClient(newAdminClient, msg);
 		
-		synchronized (m_adminClients) {
-			m_adminClients.add(data);
+		
+		// send all invisible sensors as sensor-config items
+		List<Sensor> allSensors = Server.getSensorStorage().getAllSensors();
+		for (Sensor sensor : allSensors) {
+			String sensorsVisibilityKey = VISIBILITY + sensor.ident;
+			String value = m_prefs.getValue(sensorsVisibilityKey);
+			if ("false".equals(value)) {
+				Configuration config = new Configuration("visibility of sensor " + sensor.description, sensorsVisibilityKey, SettingType.bool, "false");
+				msg = AdminServerProtocolAbstractor.createSensorConfigMessage(sensor.ident, config);
+				sendToClient(newAdminClient, msg);
+			}
 		}
+		
 	}
 	
 	/**
@@ -152,9 +179,14 @@ public class ClientAbstraction implements IChangeListener, IServerCommandListene
 		if (key.startsWith(Definitions.PREFIX_SENSORS_VISIBILITY)) {
 			// notify all clients
 			log.info("a sensor has become (in)visible");
-			String sensorId = key.replace(Definitions.PREFIX_SENSORS_VISIBILITY + ".", "");
-			String msgToSend = ServerProtocolAbstractor.createSensorVisibilityMessage(sensorId, "TODO", "TODO", Boolean.parseBoolean(msg));
-			broadcastToAllClients(msgToSend);
+			String sensorId = key.replace(VISIBILITY, "");
+			Sensor s = Server.getSensorStorage().getSensorById(sensorId);
+			if (s != null) {
+				String msgToSend = ServerProtocolAbstractor.createSensorVisibilityMessage(sensorId, s.description, s.dataType, Boolean.parseBoolean(msg));
+				broadcastToAllClients(msgToSend);
+			} else {
+				log.warn("we got info about new sensor which isn't really there! id=" + sensorId);
+			}
 		}
 	}
 	
@@ -171,7 +203,7 @@ public class ClientAbstraction implements IChangeListener, IServerCommandListene
 			all = new ArrayList<ServerClient>(targets);
 		}
 		
-		log.info("sending to all clients " + all.size());
+		log.info("sending to all " + all.size() + "clients");
 		for (ServerClient sc : all) {
 			sendToClient(sc, msg);
 		}
@@ -219,7 +251,14 @@ public class ClientAbstraction implements IChangeListener, IServerCommandListene
 			}
 		}
 	};
-
+	
+	/**
+	 * get the number of connected clients, for status tracking
+	 * @return
+	 */
+	public int getClientCount() {
+		return m_clients.getAllClients().size();
+	}
 	
 	/*******
 	 * messages that the server will be notified about

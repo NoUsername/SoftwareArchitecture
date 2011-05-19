@@ -35,7 +35,7 @@ import at.fhooe.mcm441.server.utility.Definitions;
  * @author Paul Klingelhuber
  */
 public class SensorManager implements IMultiClientNetworkListener, IMultiClientNetworkEventsListener,
-		ISensorProtocolListener, IPoolObserver {
+		ISensorProtocolListener, IPoolObserver, ISensorStorage {
 	private final Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass().getName());
 
 	/** preferences-prefix for polling time, the sensor-id will be appended */
@@ -72,6 +72,27 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 		});
 		t.setName("polling thread");
 		t.start();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public List<Sensor> getAllSensors() {
+		List<Sensor> all = new ArrayList<Sensor>();
+		for (ServerSensor sens : sensors.values()) {
+			all.add(sens.sensor);
+		}
+		return all;
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public Sensor getSensorById(String sensorId) {
+		ServerSensor ssens = sensors.get(sensorId);
+		return (ssens != null) ? ssens.sensor : null;
 	}
 
 	/**
@@ -144,7 +165,7 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 		Sensor sensor = container.sensor;
 		sensor.data = data;
 		
-		log.info("got data from sensor: " + c.m_id + " " + data);
+		log.trace("got data from sensor: " + c.m_id + " " + data);
 		
 		// TODO notify processing unit
 		
