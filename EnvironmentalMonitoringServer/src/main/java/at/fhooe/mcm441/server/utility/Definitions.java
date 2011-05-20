@@ -79,6 +79,12 @@ public class Definitions {
 			+ PREFIX_SEPERATOR + "htmloutputpath";
 
 	/**
+	 * the prefix for the normal log output path for the log files
+	 */
+	public static final String PREFIX_SERVER_OUTPUT_PATH_NORMAL_LOG = PREFIX_SERVER
+			+ PREFIX_SEPERATOR + "normallogoutputpath";
+
+	/**
 	 * the prefix for the date format output string for the html files
 	 */
 	public static final String PREFIX_SERVER_DATE_FORMAT = PREFIX_SERVER
