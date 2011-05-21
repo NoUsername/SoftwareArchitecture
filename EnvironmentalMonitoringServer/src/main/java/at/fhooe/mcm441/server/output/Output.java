@@ -3,7 +3,12 @@ package at.fhooe.mcm441.server.output;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 
@@ -26,11 +31,9 @@ public abstract class Output implements ISensorDataListener {
 			.getClass().getName());
 
 	/**
-	 * counts the number of sensor data that was received and should be added to
-	 * the output. if this reaches a certain threshold a new file should be
-	 * generated and the counter be reset
+	 * the sensor list
 	 */
-	protected int m_sensorCount = 0;
+	protected Map<String, List<Sensor>> m_sensors = null;
 
 	/**
 	 * finish the file
@@ -41,6 +44,45 @@ public abstract class Output implements ISensorDataListener {
 	 * start a new file
 	 */
 	protected abstract void init();
+
+	public Output() {
+		m_sensors = new Hashtable<String, List<Sensor>>();
+	}
+
+	/**
+	 * adds a new sensor value to the list and return true if a new file should
+	 * be extracted
+	 * 
+	 * @param sensor
+	 *            the sensor that should be added
+	 */
+	protected boolean isExportToFile(Sensor sensor) {
+		if (m_sensors != null && sensor != null) {
+			if (m_sensors.containsKey(sensor.ident)) {
+				m_sensors.get(sensor.ident).add(sensor);
+			} else {
+				List<Sensor> temp = new ArrayList<Sensor>();
+				temp.add(sensor);
+				m_sensors.put(sensor.ident, temp);
+			}
+			int num = 0;
+			String numberOfSensors = Server.getPreferences().getValue(
+					Definitions.PREFIX_SERVER_NUMBER_OF_SENSORDATA);
+			try {
+				num = Integer.parseInt(numberOfSensors);
+			} catch (NumberFormatException ex) {
+				log.error(
+						"not a valid number stored under PREFIX_SERVER_NUMBER_OF_SENSORDATA",
+						ex);
+				return false;
+			}
+			int size = m_sensors.get(sensor.ident).size();
+			if (size >= num) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	/**
 	 * formats the sensor data in a correct way
@@ -84,7 +126,7 @@ public abstract class Output implements ISensorDataListener {
 			File parentFilePath = new File(path);
 
 			parentFilePath = parentFilePath.getAbsoluteFile();
-			
+
 			if (!parentFilePath.exists()) {
 				if (!parentFilePath.mkdir()) {
 					log.error("couldn't create the main dir: " + path);
@@ -94,9 +136,9 @@ public abstract class Output implements ISensorDataListener {
 			if (parentFilePath.isDirectory()) {
 				// correct path given
 				File childPath = new File(path);
-				
+
 				childPath = childPath.getAbsoluteFile();
-				
+
 				if (!childPath.exists()) {
 					// create the directory
 					if (!childPath.mkdir()) {
@@ -112,7 +154,6 @@ public abstract class Output implements ISensorDataListener {
 
 				String fileName = format.format(dateTime);
 
-				
 				try {
 					return new File(childPath, fileName).getCanonicalPath();
 				} catch (IOException e) {

@@ -15,12 +15,11 @@ import at.fhooe.mcm441.server.utility.Definitions;
  * the output class which exports the sensor data into an html file specified in
  * the Preferences
  * 
- * TODO: maybe think about creating an own folder for each sensor id
- * 
  * @author Manuel Lachberger
  * 
  */
 public class HtmlOutput extends Output {
+
 	/**
 	 * the html generator object
 	 */
@@ -44,6 +43,7 @@ public class HtmlOutput extends Output {
 		// insert the javascript code to get the correct links
 		addLinksForPage();
 
+		m_sensors.clear();
 	}
 
 	@Override
@@ -66,6 +66,15 @@ public class HtmlOutput extends Output {
 	protected void exportToFile(String path, Sensor sensor) throws IOException {
 
 		if (path != null && m_htmlGenerator != null) {
+
+			File f = new File(path);
+			if (!f.exists()) {
+				if (!f.isDirectory()) {
+					if (!f.mkdir()) {
+						log.error("couldn't create the html output directory");
+					}
+				}
+			}
 
 			finish();
 
@@ -91,14 +100,15 @@ public class HtmlOutput extends Output {
 				if (filePath != null) {
 					// filePath.replace("\\", "\\");
 					File file = new File(filePath);
-					if (file.createNewFile()) {
-						FileWriter writer = new FileWriter(file);
-						writer.write(stringBuffer.toString());
-						writer.flush();
-						writer.close();
-					} else {
-						log.error("couldn't create the html file!");
+					if (!file.exists()) {
+						if (!file.createNewFile()) {
+							log.error("couldn't create the html file!");
+						}
 					}
+					FileWriter writer = new FileWriter(file);
+					writer.write(stringBuffer.toString());
+					writer.flush();
+					writer.close();
 				}
 			} else {
 				log.warn("couldn't write the file because the stringbuffer is empty!");
@@ -117,14 +127,14 @@ public class HtmlOutput extends Output {
 	 * that the links work in there
 	 */
 	private void addLinksForPage() {
-		m_htmlGenerator.append("<script src=\"jq.js\"></script>");
+		m_htmlGenerator.append("<script src=\"../jq.js\"></script>");
 		m_htmlGenerator.append("<script>");
 		m_htmlGenerator.append("function callback(data, textStatus, jqXHR) {");
 		m_htmlGenerator.append("$('#links').html(data);");
 		m_htmlGenerator.append("}");
 		m_htmlGenerator.append("function reloadLinks() {");
 		m_htmlGenerator
-				.append("jQuery.get(\"./linkprovider.php\", \"\", callback, \"html\");");
+				.append("jQuery.get(\"../linkprovider.php\", \"\", callback, \"html\");");
 		m_htmlGenerator.append("setTimeout(reloadLinks, 5000);");
 		m_htmlGenerator.append("}");
 		m_htmlGenerator.append("$(document).ready(function(){");
@@ -134,12 +144,10 @@ public class HtmlOutput extends Output {
 
 	@Override
 	public void onSensorDataReceived(Sensor sensor) {
-		if (m_htmlGenerator != null && sensor != null) {
+		if (isExportToFile(sensor)) {
+			if (m_htmlGenerator != null && sensor != null) {
 
-			// this is the first sensor value -> create header and start table,
-			// now that we have the sensor data
-			if (m_sensorCount == 0) {
-				// add header
+				// create header and start table
 				m_htmlGenerator.append("<h1>Sensor Data for SensorID: "
 						+ sensor.ident + "</h1>");
 
@@ -148,37 +156,21 @@ public class HtmlOutput extends Output {
 
 				// start the table for the sensor values
 				m_htmlGenerator.append("<table border=1>");
-			}
 
-			String numberOfSensors = Server.getPreferences().getValue(
-					Definitions.PREFIX_SERVER_NUMBER_OF_SENSORDATA);
-			int num = 0;
-			try {
-				num = Integer.parseInt(numberOfSensors);
-			} catch (NumberFormatException ex) {
-				log.error(
-						"not a valid number stored under PREFIX_SERVER_NUMBER_OF_SENSORDATA",
-						ex);
-				return;
-			}
-
-			if (m_sensorCount >= num) {
 				// we have to create a new file now
+				for (Sensor s : m_sensors.get(sensor.ident)) {
+					m_htmlGenerator.append(this.formatSensorData(s));
+				}
+
 				try {
 					exportToFile(
 							Server.getPreferences().getValue(
-									Definitions.PREFIX_SERVER_OUTPUT_PATH_HTML),
-							sensor);
+									Definitions.PREFIX_SERVER_OUTPUT_PATH_HTML)
+									+ "/" + sensor.ident, sensor);
 				} catch (IOException e) {
 					log.error("couldn't export the file!", e);
 				}
-				// we have to reset the counter
-				m_sensorCount = 0;
 			}
-
-			m_htmlGenerator.append(this.formatSensorData(sensor));
-
-			m_sensorCount++;
 		}
 	}
 
