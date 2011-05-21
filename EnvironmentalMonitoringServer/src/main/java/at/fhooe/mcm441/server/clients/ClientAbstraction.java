@@ -36,6 +36,10 @@ public class ClientAbstraction implements IChangeListener,
 
 	private Preferences m_prefs;
 
+	/** preferences-prefix for polling time, the sensor-id will be appended */
+	private static final String POLLTIME = Definitions.PREFIX_SENSORS_POLLTIME
+			+ Definitions.PREFIX_SEPERATOR;
+	
 	private static final String VISIBILITY = Definitions.PREFIX_SENSORS_VISIBILITY + Definitions.PREFIX_SEPERATOR;
 	
 	public ClientAbstraction() {
@@ -163,10 +167,15 @@ public class ClientAbstraction implements IChangeListener,
 
 		
 		// send all invisible sensors as sensor-config items
+		// + send all polling sensors as polling frequency objects
 		List<Sensor> allSensors = Server.getSensorStorage().getAllSensors();
 		for (Sensor sensor : allSensors) {
 			msg = createSensorVisiblityConf(sensor);
 			sendToClient(newAdminClient, msg);
+			if (sensor.isPolling) {
+				msg = createSensorPollTimeConf(sensor);
+				sendToClient(newAdminClient, msg);
+			}
 		}
 		
 	}
@@ -180,6 +189,18 @@ public class ClientAbstraction implements IChangeListener,
 		String sensorsVisibilityKey = VISIBILITY + sensor.ident;
 		String value = m_prefs.getValue(sensorsVisibilityKey);
 		Configuration config = new Configuration("visibility of sensor " + sensor.description, sensorsVisibilityKey, SettingType.bool, value);
+		return AdminServerProtocolAbstractor.createSensorConfigMessage(sensor.ident, config);
+	}
+	
+	/**
+	 * creates a config item for the sensors polling time
+	 * @param sensor
+	 * @return
+	 */
+	private String createSensorPollTimeConf(Sensor sensor) {
+		String sensorsPollTimeKey = POLLTIME + sensor.ident;
+		String value = m_prefs.getValue(sensorsPollTimeKey);
+		Configuration config = new Configuration("polling time of sensor " + sensor.description, sensorsPollTimeKey, SettingType.number, value);
 		return AdminServerProtocolAbstractor.createSensorConfigMessage(sensor.ident, config);
 	}
 	
@@ -218,6 +239,12 @@ public class ClientAbstraction implements IChangeListener,
 						admins = new ArrayList<ServerClient>(m_adminClients.values());
 					}
 					sendToClients(admins, confMsg);
+					
+					// if its a polling sensor, we additionally need the polltime config:
+					if (s.isPolling) {
+						confMsg = createSensorPollTimeConf(s);
+						sendToClients(admins, confMsg);
+					}
 				} else {
 					log.warn("we got info about new sensor which isn't really there! id=" + sensorId);
 				}
@@ -226,7 +253,6 @@ public class ClientAbstraction implements IChangeListener,
 				msgToSend = ServerProtocolAbstractor.createSensorVisibilityMessage(sensorId, "NOT_USED", "NOT_USED", false);
 				broadcastToAllClients(msgToSend);
 			}
-			
 		}
 	}
 
