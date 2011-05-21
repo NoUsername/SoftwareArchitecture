@@ -1,6 +1,7 @@
 package at.fhooe.mcm441.sensor;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Random;
 
 import org.slf4j.Logger;
@@ -28,7 +29,15 @@ public class SensorApp implements IPackageListener, IConnectionStatusListener
 	 */
     public static void main( String[] args ) throws Exception
     {
-    	new SensorApp();
+    	String host = "localhost";
+    	int port = 5555;
+    	if (args.length > 1) {
+    		host = args[1];
+    	}
+    	if (args.length > 2) {
+    		port = Integer.parseInt(args[2]);
+    	}
+    	new SensorApp(host, port);
 	}
     
     /** connection */
@@ -54,9 +63,15 @@ public class SensorApp implements IPackageListener, IConnectionStatusListener
     		"lux", "dieters", "laughs", "ZZZs",
     		"wetness", "worthness", "<3"};
     
-	public SensorApp() throws Exception {
+	public SensorApp(String targetHost, int port) {
+		
 		m_client = new NetworkServiceClient(this, this);
-		m_client.connectAndStart(InetAddress.getByName("localhost"), 5555);
+		
+		try {
+			m_client.connectAndStart(InetAddress.getByName(targetHost), port);
+		} catch (UnknownHostException e) {
+			log.warn("cannot resolve target host " + targetHost);
+		}
 		
 		m_isPoll = m_r.nextBoolean();
 		
@@ -81,6 +96,7 @@ public class SensorApp implements IPackageListener, IConnectionStatusListener
 		} else {
 			log.info("started polling sensor...");
 		}
+		
 	}
 
 	/**
@@ -91,7 +107,7 @@ public class SensorApp implements IPackageListener, IConnectionStatusListener
 	@Override
 	public void onNewPackage(String newPackage) {
 		String dataMsg = SensorProtocol.createSensorDataMsg(getData());
-		m_client.sendMessage(dataMsg);
+		sendNewData(dataMsg);
 	}
 	
 	/**
@@ -108,9 +124,17 @@ public class SensorApp implements IPackageListener, IConnectionStatusListener
 	private void pushData() {
 		while (m_running) {
 			String dataMsg = SensorProtocol.createSensorDataMsg(getData());
-			m_client.sendMessage(dataMsg);
+			sendNewData(dataMsg);
 			Util.sleep(m_pushWaitTime);
 		}
+	}
+	
+	/**
+	 * actually sends sth to the server
+	 * @param msg
+	 */
+	protected void sendNewData(String msg) {
+		m_client.sendMessage(msg);
 	}
 
 	@Override

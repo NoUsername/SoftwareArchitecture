@@ -21,7 +21,7 @@ public class ConsoleTestAdminClient implements IAdminClientSideListener,
 	public static String HOST = "localhost";
 	public static int PORT = 4445;
 	
-	private static final boolean HARDCORETEST = false; // if this is true, not one but MANY clients are started
+	private static final boolean HARDCORETEST = true; // if this is true, not one but MANY clients are started
 	private static final boolean LOGGING = !HARDCORETEST;
 	
 	private static final int MIN_STAY_CONNECTED_TIME = 120; // seconds
@@ -58,7 +58,7 @@ public class ConsoleTestAdminClient implements IAdminClientSideListener,
 			}}).start();
 			Thread.sleep(MIN_STARTING_OFFSET+r.nextInt(10));
 			if (i%10 == 0)
-				System.err.println(" WE ARE AT " + i + " of " + 50 + " clients");
+				System.err.println(" WE ARE AT " + i + " of " + STARTED_CLIENTS_COUNT + " clients");
 		}
 		
 		// log status:

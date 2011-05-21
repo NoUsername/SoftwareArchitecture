@@ -204,22 +204,30 @@ public class ClientAbstraction implements IChangeListener,
 			// notify all clients
 			log.info("a sensor has become (in)visible");
 			String sensorId = key.replace(VISIBILITY, "");
-			Sensor s = Server.getSensorStorage().getSensorById(sensorId);
-			if (s != null) {
-				String msgToSend = ServerProtocolAbstractor.createSensorVisibilityMessage(sensorId, s.description, s.dataType, Boolean.parseBoolean(msg));
-				broadcastToAllClients(msgToSend);
-				
-				// create the visibility conf item for the admin clients:
-				String confMsg = createSensorVisiblityConf(s);
-				List<ServerClient> admins = null;
-				synchronized (m_adminClients) {
-					// copy to be thread-safe
-					admins = new ArrayList<ServerClient>(m_adminClients.values());
+			String msgToSend = null;
+			if ("true".equals(msg)) {
+				// for a visible message, we need all the sensors information
+				Sensor s = Server.getSensorStorage().getSensorById(sensorId);
+				if (s != null) {
+					msgToSend = ServerProtocolAbstractor.createSensorVisibilityMessage(sensorId, s.description, s.dataType, true);
+					broadcastToAllClients(msgToSend);
+					// create the visibility conf item for the admin clients:
+					String confMsg = createSensorVisiblityConf(s);
+					List<ServerClient> admins = null;
+					synchronized (m_adminClients) {
+						// copy to be thread-safe
+						admins = new ArrayList<ServerClient>(m_adminClients.values());
+					}
+					sendToClients(admins, confMsg);
+				} else {
+					log.warn("we got info about new sensor which isn't really there! id=" + sensorId);
 				}
-				sendToClients(admins, confMsg);
 			} else {
-				log.warn("we got info about new sensor which isn't really there! id=" + sensorId);
+				// sensor became invisble, we only need his id
+				msgToSend = ServerProtocolAbstractor.createSensorVisibilityMessage(sensorId, "NOT_USED", "NOT_USED", false);
+				broadcastToAllClients(msgToSend);
 			}
+			
 		}
 	}
 
