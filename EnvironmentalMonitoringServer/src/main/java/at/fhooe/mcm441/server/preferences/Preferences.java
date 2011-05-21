@@ -9,7 +9,7 @@ import java.util.Vector;
 
 import org.slf4j.Logger;
 
-import at.fhooe.mcm441.server.utility.Definitions;
+import at.fhooe.mcm441.commons.util.Definitions;
 
 /**
  * handles all the preferences and notifies the registered listener in case of

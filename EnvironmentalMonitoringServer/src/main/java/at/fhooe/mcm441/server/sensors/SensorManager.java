@@ -14,13 +14,13 @@ import at.fhooe.mcm441.commons.network.MultiClientNetworkService;
 import at.fhooe.mcm441.commons.network.NetworkServiceClient;
 import at.fhooe.mcm441.commons.protocol.ISensorProtocolListener;
 import at.fhooe.mcm441.commons.protocol.SensorProtocol;
+import at.fhooe.mcm441.commons.util.Definitions;
 import at.fhooe.mcm441.commons.util.IPoolObserver;
 import at.fhooe.mcm441.commons.util.PooledExecutor;
 import at.fhooe.mcm441.commons.util.Util;
 import at.fhooe.mcm441.sensor.Sensor;
 import at.fhooe.mcm441.server.Server;
 import at.fhooe.mcm441.server.preferences.Preferences;
-import at.fhooe.mcm441.server.utility.Definitions;
 
 /**
  * Abstracts the sensor connection

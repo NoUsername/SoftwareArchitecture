@@ -11,10 +11,10 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 
+import at.fhooe.mcm441.commons.util.Definitions;
 import at.fhooe.mcm441.sensor.Sensor;
 import at.fhooe.mcm441.server.Server;
 import at.fhooe.mcm441.server.processing.ISensorDataListener;
-import at.fhooe.mcm441.server.utility.Definitions;
 
 /**
  * defines the output class that is implemented by all the possible outputs.

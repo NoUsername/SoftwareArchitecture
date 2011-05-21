@@ -6,10 +6,10 @@ import org.slf4j.Logger;
 
 import at.fhooe.mcm441.commons.network.Client;
 import at.fhooe.mcm441.commons.network.NetworkServiceClient;
+import at.fhooe.mcm441.commons.util.Definitions;
 import at.fhooe.mcm441.sensor.Sensor;
 import at.fhooe.mcm441.server.Server;
 import at.fhooe.mcm441.server.preferences.Preferences;
-import at.fhooe.mcm441.server.utility.Definitions;
 
 /**
  * Unit test for simple App.

@@ -9,8 +9,8 @@ import at.fhooe.mcm441.commons.network.MultiClientNetworkService;
 import at.fhooe.mcm441.commons.network.NetworkServiceClient;
 import at.fhooe.mcm441.commons.protocol.AdminServerProtocolAbstractor;
 import at.fhooe.mcm441.commons.protocol.ServerProtocolAbstractor;
+import at.fhooe.mcm441.commons.util.Definitions;
 import at.fhooe.mcm441.server.Server;
-import at.fhooe.mcm441.server.utility.Definitions;
 
 public class ServerNetworkConnection implements IMultiClientNetworkListener {
 	private final Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass().getName());

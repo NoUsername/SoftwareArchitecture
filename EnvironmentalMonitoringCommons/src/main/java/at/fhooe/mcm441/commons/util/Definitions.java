@@ -1,4 +1,4 @@
-package at.fhooe.mcm441.server.utility;
+package at.fhooe.mcm441.commons.util;
 
 public class Definitions {
 	// =========================================

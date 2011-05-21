@@ -5,9 +5,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
 
+import at.fhooe.mcm441.commons.util.Definitions;
 import at.fhooe.mcm441.sensor.Sensor;
 import at.fhooe.mcm441.server.Server;
-import at.fhooe.mcm441.server.utility.Definitions;
 
 /**
  * the output class which exports the sensor data into a log file specified in
