@@ -17,21 +17,21 @@ public interface IAdminClientSideListener extends IClientSideListener {
 	 * @param sensorId
 	 * @param conf
 	 */
-	public void onSensorConfigurationItem(String sensorId, Configuration conf);
+	void onSensorConfigurationItem(String sensorId, Configuration conf);
 	/**
 	 * configuration item for the server
 	 * @param conf
 	 */
-	public void onServerConfigurationItem(Configuration conf);
+	void onServerConfigurationItem(Configuration conf);
 	
 	/**
 	 * a new client connected
 	 * @param client
 	 */
-	public void onClientConnected(Client client);
+	void onClientConnected(Client client);
 	/**
 	 * a client disconnected
 	 * @param client
 	 */
-	public void onClientDisconnected(Client client);
+	void onClientDisconnected(Client client);
 }

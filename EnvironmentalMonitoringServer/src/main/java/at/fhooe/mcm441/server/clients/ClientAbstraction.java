@@ -243,7 +243,9 @@ public class ClientAbstraction implements IChangeListener,
 			all = new ArrayList<ServerClient>(targets);
 		}
 
-		log.info("sending to all " + all.size() + "clients");
+		if (log.isTraceEnabled()) {
+			log.trace("sending to all " + all.size() + "clients");
+		}
 		for (ServerClient sc : all) {
 			sendToClient(sc, msg);
 		}

@@ -157,8 +157,9 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 			prefs.addNewPreference(POLLTIME + c.m_id, defaultPolling);
 		}
 
-		log.info("got new sensor: " + container.sensor);
-		// TODO tell sb about new sensor
+		if (log.isTraceEnabled()) {
+			log.trace("got new sensor: " + container.sensor);
+		}
 
 		prefs.addNewPreference(VISIBILITY + c.m_id, "true");
 	}

@@ -12,7 +12,7 @@ public interface IAdminClientCommands extends IClientCommands {
 	 * @param confId what should be configured
 	 * @param confData new value
 	 */
-	public void setConfiguration(String confId, String confData);
+	void setConfiguration(String confId, String confData);
 	
 	/**
 	 * configuration for a sensor should be set
@@ -21,6 +21,6 @@ public interface IAdminClientCommands extends IClientCommands {
 	 * @param confId what should be configured
 	 * @param confData new value
 	 */
-	public void setSensorConfiguration(String sensorid, String confId, String confData);
+	void setSensorConfiguration(String sensorid, String confId, String confData);
 
 }

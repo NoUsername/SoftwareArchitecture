@@ -63,7 +63,7 @@ public class Server {
 			int clients = m_clientAbstr.getClientCount();
 			int sensors = m_sensorManager.getAllSensors().size();
 			log.info("there are currently " + clients + " clients connected and " + sensors + " sensors available");
-			Util.trySleep(5000);
+			Util.sleep(5000);
 		}
 
 	}
