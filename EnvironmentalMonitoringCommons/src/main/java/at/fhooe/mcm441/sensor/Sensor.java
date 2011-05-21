@@ -32,6 +32,11 @@ public class Sensor {
 	public String toString() {
 		return String.format("Sensor id=%s polling=%b, value=%f, valueType=%s, description=%s", ident, isPolling, data, dataType, description);
 	}
+	
+	@Override
+	public Sensor clone(){
+		return new Sensor(ident,description,isPolling,data,dataType);
+	}
 
 	/**
 	 * the identifier of the sensor
