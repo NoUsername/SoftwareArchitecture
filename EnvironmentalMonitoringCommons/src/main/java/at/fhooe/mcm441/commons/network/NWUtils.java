@@ -12,8 +12,9 @@ private NWUtils() {}
 	 */
 	
 	public static void tryClose(Closeable c) {
-		if (c ==null)
+		if (c == null) {
 			return;
+		}
 		
 		try {
 			c.close();
@@ -23,8 +24,9 @@ private NWUtils() {}
 	}
 	
 	public static void tryClose(Socket c) {
-		if (c ==null)
+		if (c == null) {
 			return;
+		}
 		
 		try {
 			c.close();

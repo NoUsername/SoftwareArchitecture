@@ -100,14 +100,16 @@ public class NetworkServiceClient implements IMessageSender {
 				}
 			});
 			m_thread.start();
-			if (m_conStatusListener != null)
+			if (m_conStatusListener != null) {
 				m_conStatusListener.onConnectionEstablished();
+			}
 			return true;
 		} catch (Exception e) {
 			log.warn("cannot start client socket ", e);
 			m_isRunning = false;
-			if (m_conStatusListener != null)
+			if (m_conStatusListener != null) {
 				m_conStatusListener.onConnectionLost();
+			}
 			return false;
 		}
 	}
@@ -136,14 +138,16 @@ public class NetworkServiceClient implements IMessageSender {
 				}
 			});
 			m_thread.start();
-			if (m_conStatusListener != null)
+			if (m_conStatusListener != null) {
 				m_conStatusListener.onConnectionEstablished();
+			}
 			return true;
 		} catch (Exception e) {
 			log.warn("cannot start client socket ", e);
 			m_isRunning = false;
-			if (m_conStatusListener != null)
+			if (m_conStatusListener != null) {
 				m_conStatusListener.onConnectionLost();
+			}
 			return false;
 		}
 	}
@@ -170,8 +174,9 @@ public class NetworkServiceClient implements IMessageSender {
 			m_isRunning = false;
 		}
 		
-		if (m_conStatusListener != null)
+		if (m_conStatusListener != null) {
 			m_conStatusListener.onConnectionLost();
+		}
 	}
 	
 	/* **

@@ -62,21 +62,24 @@ public class MultiClientNetworkService {
 				final NetworkServiceClient realClient = new NetworkServiceClient(curSock, new IPackageListener() {
 					@Override
 					public void onNewPackage(final String newPackage) {
-						if (m_update != null)
+						if (m_update != null) {
 							m_update.onNewPackage(clientData, newPackage);
+						}
 					}
 				}, null); // we set the status listener to null, because we need the realClient object first
 				
 				realClient.setConnectionStatusListener(new IConnectionStatusListener() {
 					@Override
 					public void onConnectionLost() {
-						if (m_eventListener != null)
+						if (m_eventListener != null) {
 							m_eventListener.onClientDisconnectes(clientData);
+						}
 					}
 					@Override
 					public void onConnectionEstablished() {
-						if (m_eventListener != null)
+						if (m_eventListener != null) {
 							m_eventListener.onNewClient(clientData, realClient);
+						}
 					}
 				});
 				

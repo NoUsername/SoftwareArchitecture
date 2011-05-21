@@ -56,10 +56,10 @@ public class SensorApp implements IPackageListener, IConnectionStatusListener
     private boolean m_running = true;
     
     /** list of possible descriptions */
-    private final String[] possibleDescriptions = new String[]{"temperature sensor",
+    private final String[] m_possibleDescriptions = new String[]{"temperature sensor",
     		"light sensor", "sarkasm sensor", "laugh-o-meter", "danger-of-falling-asleep-o-meter",
     		"chance-of-rain-sensor", "worth-it-ness-sensor", "love-sensor"};
-    private final String[] datatypes = new String[]{"°C",
+    private final String[] m_datatypes = new String[]{"°C",
     		"lux", "dieters", "laughs", "ZZZs",
     		"wetness", "worthness", "<3"};
     
@@ -75,9 +75,9 @@ public class SensorApp implements IPackageListener, IConnectionStatusListener
 		
 		m_isPoll = m_r.nextBoolean();
 		
-		int idx = m_r.nextInt(possibleDescriptions.length);
-		m_description = possibleDescriptions[idx];
-		m_datatype = datatypes[idx];
+		int idx = m_r.nextInt(m_possibleDescriptions.length);
+		m_description = m_possibleDescriptions[idx];
+		m_datatype = m_datatypes[idx];
 		
 		String startMsg = SensorProtocol.createSensorInfoMsg(m_description, m_datatype, m_isPoll);
 		

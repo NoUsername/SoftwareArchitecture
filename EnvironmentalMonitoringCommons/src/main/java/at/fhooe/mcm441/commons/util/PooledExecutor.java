@@ -7,6 +7,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/**
+ * an improved threadpool that supports timeouts and queue-limits
+ * 
+ * @author Paul Klingelhuber
+ */
 public class PooledExecutor implements IFinished {
 	
 	/** size of the threadpool */
@@ -15,11 +20,11 @@ public class PooledExecutor implements IFinished {
 	private int m_queueSizeWarning = 1;
 	/** how long one task is maximally allowed to take */
 	private int m_maxExecutionTime = 1;
-	
+	/** counts how many threads there are currently that are executing */
 	private AtomicInteger m_currentlyExecuting = new AtomicInteger(0);
-	
-	private ExecutorService execService;
-	
+	/** the actual thread-pool that takes care of running our tasks */
+	private ExecutorService m_execService;
+	/** inform that guy when the queue gets too long */
 	private IPoolObserver m_observer;
 	
 	
@@ -28,7 +33,7 @@ public class PooledExecutor implements IFinished {
 		m_queueSizeWarning = waitQueueWarningLimit;
 		m_maxExecutionTime = maxOverallResponseTime;
 		m_observer = callback;
-		execService = Executors.newFixedThreadPool(m_size);
+		m_execService = Executors.newFixedThreadPool(m_size);
 	}
 	
 	/**
@@ -69,7 +74,7 @@ public class PooledExecutor implements IFinished {
 			}
 		};
 		
-		execService.execute(wrapped);
+		m_execService.execute(wrapped);
 		m_currentlyExecuting.incrementAndGet();
 	}
 

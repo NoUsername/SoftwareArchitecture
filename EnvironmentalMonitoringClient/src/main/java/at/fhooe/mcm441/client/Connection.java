@@ -21,9 +21,9 @@ public class Connection implements IPackageListener {
 	/**
 	 * protocol abstraction
 	 */
-	protected ClientProtocolAbstractor prot;
+	protected ClientProtocolAbstractor m_prot;
 	
-	protected NetworkServiceClient client;
+	protected NetworkServiceClient m_client;
 	
 	/**
 	 * create and start the connection to the server
@@ -34,9 +34,9 @@ public class Connection implements IPackageListener {
 	 * @throws Exception when an error occurs, an exception may be thrown
 	 */
 	public Connection(String target, int port, IClientSideListener listener, IConnectionStatusListener conListener)  throws Exception {
-		client = new NetworkServiceClient(this, conListener);
+		m_client = new NetworkServiceClient(this, conListener);
 		createProtocolAbstractor(listener);
-		client.connectAndStart(InetAddress.getByName(target), port);
+		m_client.connectAndStart(InetAddress.getByName(target), port);
 		
 	}
 	
@@ -46,7 +46,7 @@ public class Connection implements IPackageListener {
 	 * @param listener
 	 */
 	protected void createProtocolAbstractor(IClientSideListener listener) {
-		prot = new ClientProtocolAbstractor(client, listener);
+		m_prot = new ClientProtocolAbstractor(m_client, listener);
 	}
 
 	/**
@@ -55,7 +55,7 @@ public class Connection implements IPackageListener {
 	@Override
 	public void onNewPackage(String newPackage) {
 		//log.info("server said: " + newPackage);
-		if (!prot.parseMessage(newPackage))
+		if (!m_prot.parseMessage(newPackage))
 			log.warn("unknown command: " + newPackage);
 	}
 	
@@ -66,7 +66,7 @@ public class Connection implements IPackageListener {
 	 * @param register true when you want to register, false if you want to deregister
 	 */
 	public void registerForSensor(String sensorId, boolean register) {
-		prot.setRegistrationForSensor(sensorId, register);
+		m_prot.setRegistrationForSensor(sensorId, register);
 	}
 	
 
@@ -74,8 +74,8 @@ public class Connection implements IPackageListener {
 	 * shuts down the connection
 	 */
 	public void close() {
-		prot.logoff();
-		client.stop();		
+		m_prot.logoff();
+		m_client.stop();		
 	}
 
 }

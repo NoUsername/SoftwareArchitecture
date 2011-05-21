@@ -22,11 +22,11 @@ public class ClientAbstractionPooled  extends ClientAbstraction implements IPool
 	private static final int WAIT_QUEUE_SIZE_WARNING = 500;
 	/** no task executed by the pool is allowed to take longer than that much milliseconds */
 	private static final int MAX_EXECUTION_TIME = 200;
-	
-	private PooledExecutor executor;
+	/** the pool for sending to the clients */
+	private PooledExecutor m_executor;
 	
 	public ClientAbstractionPooled() {
-		executor = new PooledExecutor(POOL_THREADS, WAIT_QUEUE_SIZE_WARNING, MAX_EXECUTION_TIME, this);
+		m_executor = new PooledExecutor(POOL_THREADS, WAIT_QUEUE_SIZE_WARNING, MAX_EXECUTION_TIME, this);
 	}
 	
 	
@@ -44,7 +44,7 @@ public class ClientAbstractionPooled  extends ClientAbstraction implements IPool
 			}
 		};
 		
-		executor.execute(r, -1, new ITimeout() {
+		m_executor.execute(r, -1, new ITimeout() {
 			@Override
 			public void timedOut() {
 				onClientDisconnectes(client.getClientInfo());

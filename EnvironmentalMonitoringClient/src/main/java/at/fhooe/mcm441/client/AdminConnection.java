@@ -38,9 +38,9 @@ public class AdminConnection extends Connection {
 	 */
 	@Override
 	protected void createProtocolAbstractor(IClientSideListener listener) {
-		adminProt = new AdminClientProtocolAbstractor(client, (IAdminClientSideListener)listener);
+		adminProt = new AdminClientProtocolAbstractor(m_client, (IAdminClientSideListener)listener);
 		// overwrite the parents-instance with the admin-protocol-abstractor
-		prot = adminProt;
+		m_prot = adminProt;
 	}
 	
 	/**
@@ -50,7 +50,7 @@ public class AdminConnection extends Connection {
 	 * @param register true when you want to register, false if you want to deregister
 	 */
 	public void registerForSensor(String sensorId, boolean register) {
-		prot.setRegistrationForSensor(sensorId, register);
+		m_prot.setRegistrationForSensor(sensorId, register);
 	}
 	
 	/**

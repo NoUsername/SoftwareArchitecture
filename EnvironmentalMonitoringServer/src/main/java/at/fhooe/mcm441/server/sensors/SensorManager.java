@@ -45,17 +45,17 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 	private static final String VISIBILITY = Definitions.PREFIX_SENSORS_VISIBILITY
 			+ Definitions.PREFIX_SEPERATOR;
 	/** all sensors that have to be polled */
-	List<ServerSensor> pollSensors = new ArrayList<ServerSensor>();
+	private List<ServerSensor> m_pollSensors = new ArrayList<ServerSensor>();
 	/** to get sensor objects by their id */
-	Map<String, ServerSensor> sensors = new Hashtable<String, ServerSensor>();
+	private Map<String, ServerSensor> m_sensors = new Hashtable<String, ServerSensor>();
 	/** protocol, for processing and creating appropriate messages */
-	private SensorProtocol protocol = new SensorProtocol(this);
+	private SensorProtocol m_protocol = new SensorProtocol(this);
 	/** preferences class, so that we don't have to retrieve it everytime */
-	private Preferences prefs = null;
+	private Preferences m_prefs = null;
 	/** as long as this is true, the polling will take place */
 	private boolean m_running = true;
 	/** our threadpool for polling */
-	private PooledExecutor executor;
+	private PooledExecutor m_executor;
 
 	/**
 	 * constructor, will also already start everything
@@ -67,8 +67,8 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 				Definitions.PREFIX_SERVER_SENSORS_PORT);
 		int port = Integer.parseInt(sPort);
 		server.startListening(port);
-		prefs = Server.getPreferences();
-		executor = new PooledExecutor(25, 100, 1000, this);
+		m_prefs = Server.getPreferences();
+		m_executor = new PooledExecutor(25, 100, 1000, this);
 		Thread t = new Thread(new Runnable() {
 			@Override
 			public void run() {
@@ -85,7 +85,7 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 	@Override
 	public List<Sensor> getAllSensors() {
 		List<Sensor> all = new ArrayList<Sensor>();
-		for (ServerSensor sens : sensors.values()) {
+		for (ServerSensor sens : m_sensors.values()) {
 			all.add(sens.sensor);
 		}
 		return all;
@@ -96,7 +96,7 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 	 */
 	@Override
 	public Sensor getSensorById(String sensorId) {
-		ServerSensor ssens = sensors.get(sensorId);
+		ServerSensor ssens = m_sensors.get(sensorId);
 		return (ssens != null) ? ssens.sensor : null;
 	}
 
@@ -107,7 +107,7 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 	public void onNewClient(Client c, NetworkServiceClient sc) {
 		Sensor s = new Sensor(c.m_id, "", false, 0.0, "");
 
-		sensors.put(c.m_id, new ServerSensor(s, sc));
+		m_sensors.put(c.m_id, new ServerSensor(s, sc));
 	}
 
 	/**
@@ -116,20 +116,19 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 	@Override
 	public void onClientDisconnectes(Client c) {
 		ServerSensor container = null;
-		synchronized (sensors) {
-			container = sensors.get(c.m_id);
+		synchronized (m_sensors) {
+			container = m_sensors.get(c.m_id);
 		}
 		if (container != null) {
-			synchronized (pollSensors) {
-				pollSensors.remove(container);
+			synchronized (m_pollSensors) {
+				m_pollSensors.remove(container);
 			}
-			synchronized (sensors) {
-				sensors.remove(c.m_id);
+			synchronized (m_sensors) {
+				m_sensors.remove(c.m_id);
 			}
 			log.info("sensor " + c.m_id + " no longer available");
-			// TODO inform everybody
 
-			prefs.updatePreference(VISIBILITY + c.m_id, "false");
+			m_prefs.updatePreference(VISIBILITY + c.m_id, "false");
 		}
 	}
 
@@ -138,30 +137,30 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 	 */
 	@Override
 	public void onNewPackage(Client from, String newPackage) {
-		protocol.parseMessage(from, newPackage);
+		m_protocol.parseMessage(from, newPackage);
 	}
 
 	@Override
 	public void onSensorInfo(Client c, String description, String dataType,
 			boolean isPolling) {
-		ServerSensor container = sensors.get(c.m_id);
+		ServerSensor container = m_sensors.get(c.m_id);
 		container.sensor.description = description;
 		container.sensor.dataType = dataType;
 		container.sensor.isPolling = isPolling;
 		if (isPolling) {
-			pollSensors.add(container);
-			String defaultPolling = prefs
+			m_pollSensors.add(container);
+			String defaultPolling = m_prefs
 					.getValue(Definitions.PREFIX_SERVER_DEFAULT_POLLING);
 			int time = Integer.parseInt(defaultPolling);
 			container.nextPolling = System.currentTimeMillis() + time;
-			prefs.addNewPreference(POLLTIME + c.m_id, defaultPolling);
+			m_prefs.addNewPreference(POLLTIME + c.m_id, defaultPolling);
 		}
 
 		if (log.isTraceEnabled()) {
 			log.trace("got new sensor: " + container.sensor);
 		}
 
-		prefs.addNewPreference(VISIBILITY + c.m_id, "true");
+		m_prefs.addNewPreference(VISIBILITY + c.m_id, "true");
 	}
 
 	/**
@@ -169,7 +168,7 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 	 */
 	@Override
 	public void onSensorData(Client c, double data) {
-		ServerSensor container = sensors.get(c.m_id);
+		ServerSensor container = m_sensors.get(c.m_id);
 		Sensor sensor = container.sensor;
 		sensor.data = data;
 
@@ -182,17 +181,17 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 	private void startPollingThread() {
 		while (m_running) {
 			long now = System.currentTimeMillis();
-			synchronized (pollSensors) {
-				for (final ServerSensor s : pollSensors) {
+			synchronized (m_pollSensors) {
+				for (final ServerSensor s : m_pollSensors) {
 					if (s.nextPolling < now) {
-						executor.execute(new Runnable() {
+						m_executor.execute(new Runnable() {
 							@Override
 							public void run() {
 								s.con.sendMessage("gimmedata");
 							}
 						}, -1, null);
 
-						String defaultPolling = prefs.getValue(POLLTIME
+						String defaultPolling = m_prefs.getValue(POLLTIME
 								+ s.sensor.ident);
 						int time = Integer.parseInt(defaultPolling);
 						s.nextPolling = now + time;

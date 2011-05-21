@@ -14,6 +14,7 @@ import at.fhooe.mcm441.commons.network.Client;
  */
 public class SensorProtocol {
 	private final Logger log = org.slf4j.LoggerFactory.getLogger(this.getClass().getName());
+	private static final Logger slog = org.slf4j.LoggerFactory.getLogger(SensorProtocol.class.getName());
 	
 	/** gets informed about valid messages when parsing */
 	private ISensorProtocolListener m_listener = null;
@@ -73,7 +74,7 @@ public class SensorProtocol {
 			json.put(Protocol.FIELD_VALUE, data);
 			return json.toString();
 		} catch (JSONException e) {
-			e.printStackTrace();
+			slog.warn("cannot parse json", e);
 			return null;
 		}
 	}
