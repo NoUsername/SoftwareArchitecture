@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +24,17 @@ import at.fhooe.mcm441.server.utility.Definitions;
  * @author Manuel Lachberger
  * 
  */
-public abstract class Output implements ISensorDataListener {
+public abstract class Output implements ISensorDataListener, Runnable {
+	/**
+	 * the list of runnables that is used for exporting the files
+	 */
+	protected List<Runnable> m_runnableList = null;
+
+	/**
+	 * the execution thread
+	 */
+	protected Thread m_thread = null;
+
 	// no additional public functions are required
 	protected final Logger log = org.slf4j.LoggerFactory.getLogger(this
 			.getClass().getName());
@@ -45,8 +54,14 @@ public abstract class Output implements ISensorDataListener {
 	 */
 	protected abstract void init();
 
+	/**
+	 * default constructor that is used for initialization
+	 */
 	public Output() {
 		m_sensors = new Hashtable<String, List<Sensor>>();
+		m_runnableList = new ArrayList<Runnable>();
+		m_thread = new Thread(this);
+		m_thread.start();
 	}
 
 	/**
@@ -56,14 +71,17 @@ public abstract class Output implements ISensorDataListener {
 	 * @param sensor
 	 *            the sensor that should be added
 	 */
-	protected boolean isExportToFile(Sensor sensor) {
+	synchronized protected boolean isExportToFile(Sensor sensor) {
 		if (m_sensors != null && sensor != null) {
-			if (m_sensors.containsKey(sensor.ident)) {
-				m_sensors.get(sensor.ident).add(sensor);
+			Sensor s = sensor.clone();
+			if (m_sensors.containsKey(s.ident)) {
+				List<Sensor> tempList = m_sensors.get(s.ident);
+				tempList.add(s);
+				m_sensors.put(s.ident, tempList);
 			} else {
 				List<Sensor> temp = new ArrayList<Sensor>();
-				temp.add(sensor);
-				m_sensors.put(sensor.ident, temp);
+				temp.add(s);
+				m_sensors.put(s.ident, temp);
 			}
 			int num = 0;
 			String numberOfSensors = Server.getPreferences().getValue(
@@ -76,7 +94,7 @@ public abstract class Output implements ISensorDataListener {
 						ex);
 				return false;
 			}
-			int size = m_sensors.get(sensor.ident).size();
+			int size = m_sensors.get(s.ident).size();
 			if (size >= num) {
 				return true;
 			}
@@ -157,13 +175,27 @@ public abstract class Output implements ISensorDataListener {
 				try {
 					return new File(childPath, fileName).getCanonicalPath();
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					log.error("couldn't get the correct filepath", e);
 				}
 			} else {
 				log.warn("path parameter is wrong");
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public void run() {
+		while (true) {
+			if (m_runnableList != null && m_runnableList.size() > 0) {
+				m_runnableList.get(0).run();
+			}
+			try {
+				Thread.sleep(100);
+			} catch (InterruptedException e) {
+				log.error("couldn't sleep", e);
+			}
+		}
+
 	}
 }
