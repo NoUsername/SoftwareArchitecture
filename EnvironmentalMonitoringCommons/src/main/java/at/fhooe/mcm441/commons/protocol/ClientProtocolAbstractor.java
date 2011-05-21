@@ -52,7 +52,7 @@ public class ClientProtocolAbstractor implements IClientCommands {
 				return false;
 			}
 		} catch (JSONException jse) {
-			log.warn("could not parse json", jse);
+			log.warn("could not parse json '" + msg + "'", jse);
 			return false;
 		}
 		return true;

@@ -18,10 +18,15 @@ public class ClientAbstractionPooled  extends ClientAbstraction implements IPool
 	private final Logger log = org.slf4j.LoggerFactory.getLogger(this
 			.getClass().getName());
 	
+	private static final int POOL_THREADS = 50;
+	private static final int WAIT_QUEUE_SIZE_WARNING = 500;
+	/** no task executed by the pool is allowed to take longer than that much milliseconds */
+	private static final int MAX_EXECUTION_TIME = 200;
+	
 	private PooledExecutor executor;
 	
 	public ClientAbstractionPooled() {
-		executor = new PooledExecutor(50, 300, 200, this);
+		executor = new PooledExecutor(POOL_THREADS, WAIT_QUEUE_SIZE_WARNING, MAX_EXECUTION_TIME, this);
 	}
 	
 	
@@ -47,9 +52,16 @@ public class ClientAbstractionPooled  extends ClientAbstraction implements IPool
 		});
 	}
 
+	
+	long lastWarnTime = 0;
 	@Override
 	public void onQueueLimitReached(int size) {
-		log.warn("we reached the limit on our thread-pool-wait-queue: " + size);
+		long now = System.currentTimeMillis();
+		if (now - lastWarnTime > 2000) {
+			// don't flood log
+			lastWarnTime = now;
+			log.warn("we reached the limit on our thread-pool-wait-queue: " + size);
+		}
 	}
 
 }

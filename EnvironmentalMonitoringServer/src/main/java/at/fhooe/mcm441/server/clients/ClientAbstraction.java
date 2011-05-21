@@ -98,7 +98,6 @@ public class ClientAbstraction implements IChangeListener,
 			if ("true".equals(value)) {
 				String msg = ServerProtocolAbstractor.createSensorVisibilityMessage(sensor.ident, sensor.description, sensor.dataType, true);
 				sendToClient(sc, msg);
-				log.info("there is a visible sensor...");
 			}
 		}
 		

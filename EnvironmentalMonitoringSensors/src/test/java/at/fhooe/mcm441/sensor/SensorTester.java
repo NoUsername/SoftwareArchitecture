@@ -49,7 +49,7 @@ public class SensorTester extends SensorApp {
 		}
 		
 		// log status:
-		for (int i=0; i<10; i++) {
+		for (;;) {
 			Util.sleep(5000);
 			log.info("SENSORS CONNECTED INFO: " + clientsConnectedCount);
 			log.info("TOTAL MSGS SENT: " + msgsSentCount);
@@ -73,7 +73,8 @@ public class SensorTester extends SensorApp {
 	@Override
 	public void onConnectionEstablished() {
 		clientsConnectedCount++;
-		super.onConnectionEstablished();
+		if (LOGGING)
+			super.onConnectionEstablished();
 	}
 
 }
