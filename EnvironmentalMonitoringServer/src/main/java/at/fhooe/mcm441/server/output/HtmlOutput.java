@@ -23,10 +23,25 @@ import at.fhooe.mcm441.server.utility.Definitions;
  */
 public class HtmlOutput extends Output {
 
+	/**
+	 * the runnable target that exports the html file to the specified output
+	 * path
+	 * 
+	 * @author Manuel Lachberger
+	 * 
+	 */
 	class HtmlFileExporter implements Runnable {
-
+		/**
+		 * the sensor object that is required as parameter
+		 */
 		private Sensor m_sensor = null;
 
+		/**
+		 * constructor that sets the parameter
+		 * 
+		 * @param s
+		 *            the sensor object
+		 */
 		public HtmlFileExporter(Sensor s) {
 			m_sensor = s;
 		}

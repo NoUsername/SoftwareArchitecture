@@ -25,9 +25,14 @@ import at.fhooe.mcm441.server.utility.Definitions;
  * 
  */
 public abstract class Output implements ISensorDataListener, Runnable {
-
+	/**
+	 * the list of runnables that is used for exporting the files
+	 */
 	protected List<Runnable> m_runnableList = null;
 
+	/**
+	 * the execution thread
+	 */
 	protected Thread m_thread = null;
 
 	// no additional public functions are required
@@ -49,6 +54,9 @@ public abstract class Output implements ISensorDataListener, Runnable {
 	 */
 	protected abstract void init();
 
+	/**
+	 * default constructor that is used for initialization
+	 */
 	public Output() {
 		m_sensors = new Hashtable<String, List<Sensor>>();
 		m_runnableList = new ArrayList<Runnable>();

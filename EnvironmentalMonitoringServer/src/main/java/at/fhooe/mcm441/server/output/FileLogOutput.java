@@ -7,7 +7,6 @@ import java.util.List;
 
 import at.fhooe.mcm441.sensor.Sensor;
 import at.fhooe.mcm441.server.Server;
-import at.fhooe.mcm441.server.output.HtmlOutput.HtmlFileExporter;
 import at.fhooe.mcm441.server.utility.Definitions;
 
 /**
@@ -18,11 +17,24 @@ import at.fhooe.mcm441.server.utility.Definitions;
  * 
  */
 public class FileLogOutput extends Output {
-
+	/**
+	 * the runnable target that exports the logfile to the specified output path
+	 * 
+	 * @author Manuel Lachberger
+	 * 
+	 */
 	class FileLogExporter implements Runnable {
-
+		/**
+		 * the sensor object that is required as parameter
+		 */
 		private Sensor m_sensor = null;
 
+		/**
+		 * constructor that sets the parameter
+		 * 
+		 * @param s
+		 *            the sensor object
+		 */
 		public FileLogExporter(Sensor s) {
 			m_sensor = s;
 		}
@@ -129,5 +141,7 @@ public class FileLogOutput extends Output {
 
 	@Override
 	protected void init() {
+		// TODO Auto-generated method stub
+
 	}
 }
