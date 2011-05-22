@@ -252,15 +252,17 @@ public class SensorManager extends SensorViewer implements IAdminClientSideListe
                     public void run() {
                     	
                     	//remove clients from gui
-                    	Control[] checkboxchilds = m_group1.getChildren();
+                    	Control[] checkboxchilds = m_group2.getChildren();
+                    	System.out.println("blub" + checkboxchilds);
                 		for (Control child : checkboxchilds) {
                 			if(client.m_id.equals(child.getData("client")))
                 			{
+                				System.out.println("blub");
                 				child.dispose();
                 				break;
                 			}
                 		}
-                		m_group1.pack();
+                		m_group2.pack();
                     }
                 }); 
             }
