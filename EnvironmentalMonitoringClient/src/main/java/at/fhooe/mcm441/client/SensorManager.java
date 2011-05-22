@@ -11,6 +11,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -20,6 +21,7 @@ import org.eclipse.swt.widgets.Text;
 import org.slf4j.Logger;
 
 import at.fhooe.mcm441.commons.Configuration;
+import at.fhooe.mcm441.commons.Configuration.SettingType;
 import at.fhooe.mcm441.commons.network.Client;
 import at.fhooe.mcm441.commons.protocol.IAdminClientSideListener;
 import at.fhooe.mcm441.sensor.Sensor;
@@ -45,7 +47,7 @@ public class SensorManager extends SensorViewer implements IAdminClientSideListe
 	private static Map<String, Configuration> m_configItems;
 	
 	public static void main(String[] args) throws Exception{
-		SensorManager sc = new SensorManager(true, 0);
+		SensorManager sc = new SensorManager(false, 0);
 	
 	}
 	
@@ -64,6 +66,7 @@ public class SensorManager extends SensorViewer implements IAdminClientSideListe
 	public void newConnection() throws Exception
 	{
 		m_admin_con = new AdminConnection(HOST, PORT, this, this);
+		m_con = m_admin_con;
 		m_configItems = new HashMap<String, Configuration>();
 		m_all_sensors = new ArrayList<String>();
 
@@ -89,21 +92,13 @@ public class SensorManager extends SensorViewer implements IAdminClientSideListe
 		
 		composite3 = new Composite(m_group3, SWT.NONE);
 		gridData = new GridData(GridData.END);
-		composite3.setLayoutData(gridData);
-		composite3.setLayout(new FillLayout(SWT.HORIZONTAL));
+		RowLayout rl = new RowLayout();
+		rl.pack = true;
+		rl.fill = true;
+		
+		composite3.setLayout(rl);
+		
 			
-	    Button setButton = new Button(composite3, SWT.PUSH);
-	    setButton.setAlignment(SWT.BOTTOM);
-	    setButton.setText("set");
-	    setButton.addSelectionListener(new SelectionListener() {
-			@Override
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-//				System.out.println(text_freq.getText());
-			}
-	    });
 
 	}
 	
@@ -152,7 +147,7 @@ public class SensorManager extends SensorViewer implements IAdminClientSideListe
 
 	}
 
-
+/*
 	@Override
 	public void onSensorActivated(Sensor s) {
 		if (LOGGING)
@@ -168,7 +163,7 @@ public class SensorManager extends SensorViewer implements IAdminClientSideListe
 		}
 		m_sensors_map.put(s.ident, s);
 		msgsReceivedCount++;
-	}
+	}*/
 	
 	@Override
 	public void onSensorDeactivated(String sensorId) {
@@ -189,16 +184,25 @@ public class SensorManager extends SensorViewer implements IAdminClientSideListe
 		{
 			m_all_sensors.add(sensorId);
 			registerForSensor(sensorId, true);
-			super.addGuiElements(m_sensors_map.get(sensorId));
+			//super.addGuiElements(m_sensors_map.get(sensorId));
 		}
 		
 	}
 	
 
 	@Override
-	public void onServerConfigurationItem(Configuration conf) {
-		if (LOGGING)
+	public void onServerConfigurationItem(final Configuration conf) {
+		if (LOGGING) {
 			log.info("server conf item " + conf);
+		}
+		
+		m_display.syncExec(new Runnable() {
+			@Override
+			public void run() {
+				createConfigItem(composite3, conf);
+			}
+		});
+		
 		msgsReceivedCount++;
 	}
 
@@ -261,7 +265,43 @@ public class SensorManager extends SensorViewer implements IAdminClientSideListe
                 }); 
             }
         } ).start();
-	}	
+	}
+	
+	/**
+	 * puts the configuration item into the target composite
+	 * @param target
+	 * @param conf
+	 */
+	public void createConfigItem(Composite target, final Configuration conf) {
+		if (conf.type == SettingType.text || conf.type == SettingType.number) {
+			Composite c = new Composite(target, SWT.FILL);
+			//Composite c = target;
+			RowLayout rl = new RowLayout();
+			rl.fill = true;
+			c.setLayout(rl);
+			Label txt = new Label(c, SWT.DEFAULT);
+			txt.setText(conf.displayName);
+			
+			final Text entry = new Text(c, SWT.SINGLE);
+			entry.setText(conf.value);
+			
+			Button apply = new Button(c, SWT.DEFAULT);
+			apply.addSelectionListener(new SelectionListener() {
+				@Override
+				public void widgetSelected(SelectionEvent arg0) {
+					m_admin_con.setServerConfig(conf.id, entry.getText());
+				}
+				
+				@Override
+				public void widgetDefaultSelected(SelectionEvent arg0) {}
+			});
+			
+			target.pack();
+			log.info("added conf item");
+			
+		}
+	}
+	
 }
 
 

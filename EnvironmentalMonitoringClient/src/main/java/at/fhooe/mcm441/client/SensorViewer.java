@@ -86,20 +86,7 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 
 		while (connected == null) {
 			Thread.sleep(20);
-		}
-		
-		if (disconnectAfterSeconds > 0) {
-			new Timer().schedule(new TimerTask() {
-				@Override
-				public void run() {
-					if (LOGGING)
-						log.info("AUTOMATICALLY DISCONNECTING");
-					m_con.close();
-				}
-			}, 1000 * disconnectAfterSeconds);
-		}
-		
-		
+		}		
 		
 		runGui();
 	}
