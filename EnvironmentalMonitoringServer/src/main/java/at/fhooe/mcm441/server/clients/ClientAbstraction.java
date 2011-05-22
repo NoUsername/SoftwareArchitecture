@@ -252,6 +252,19 @@ public class ClientAbstraction implements IChangeListener,
 				// sensor became invisble, we only need his id
 				msgToSend = ServerProtocolAbstractor.createSensorVisibilityMessage(sensorId, "NOT_USED", "NOT_USED", false);
 				broadcastToAllClients(msgToSend);
+				// and unsubscribe all clients that might currently be subscribed:
+				List<ServerClient> targets = null;
+				synchronized (m_clients) {						
+					List<ServerClient> clients = m_clients.getClientsForSensor(sensorId);
+					if (clients != null) {
+						targets = new ArrayList<ServerClient>(clients);
+					}
+				}
+				if (targets != null) {
+					for (ServerClient unregMe : targets) {
+						m_clients.onClientUnregistersForSensor(unregMe, sensorId);
+					}
+				}
 			}
 		}
 	}
