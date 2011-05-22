@@ -45,10 +45,6 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 	
 	private static final boolean HARDCORETEST = false; // if this is true, not one but MANY clients are started
 	private static final boolean LOGGING = !HARDCORETEST;
-	
-	private static final int MIN_STAY_CONNECTED_TIME = 120; // seconds
-	private static final int STARTED_CLIENTS_COUNT = 100;
-	private static final int MIN_STARTING_OFFSET = 100; // milliseconds
 
 	public Connection m_con;
 	protected boolean m_autoRegister = false;
@@ -61,9 +57,7 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 	protected static long msgsReceivedCount = 0;
 	
 	public static void main(String[] args) throws Exception{
-		SensorViewer sc = new SensorViewer(true, 0);
-		
-//		sc.runGui();
+		new SensorViewer(true, 0);
 	}
 	
 	Shell m_shell;
@@ -80,12 +74,13 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 	protected Composite composite2;
 	protected Group m_group1;
 	protected TabFolder m_tabFolder;
-	protected Chart m_curChart = null;
-	
-	protected Button m_sensorcheckbox;
 	
 	public SensorViewer(boolean autoRegister, int disconnectAfterSeconds) throws Exception {
 		m_autoRegister = autoRegister;
+		
+		m_display = new Display ();
+		m_shell = new Shell(m_display);
+		setupGui();
 		
 		newConnection();
 
@@ -104,9 +99,8 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 			}, 1000 * disconnectAfterSeconds);
 		}
 		
-		m_display = new Display ();
-		m_shell = new Shell(m_display);
-		setupGui();
+		
+		
 		runGui();
 	}
 	
@@ -172,44 +166,33 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 	
 	public void addGuiElements(final Sensor sensor)
 	{
-		new Thread( new Runnable() {
+        m_shell.getDisplay().syncExec( new Runnable() {
             public void run() {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                }
-                m_shell.getDisplay().syncExec( new Runnable() {
-                    public void run() {
 
-                    	//set checkbox for sensor
-                    	m_sensorcheckbox = new Button(m_group1, SWT.CHECK);
-                    	m_sensorcheckbox.setData("sensor", sensor);
-                    	m_sensorcheckbox.setForeground(m_display.getSystemColor(SWT.COLOR_DARK_MAGENTA));
-                    	m_sensorcheckbox.setText(sensor.description);
-    
-                    	m_sensorcheckbox.addSelectionListener(new SelectionAdapter() {
-                    	      public void widgetSelected(SelectionEvent event) {
-                    	    	  if(m_sensorcheckbox.getSelection())
-                    	    	  {
-                    	    		  Sensor s = (Sensor) m_sensorcheckbox.getData("sensor");
-                    	    		  addChartTab(m_sensorcheckbox.getData("sensor"));
-                    	    		  registerForSensor(s.ident, true);
-                    	    	  }
-                    	    	  else
-                    	    	  {
-                    	    		  Sensor s = (Sensor) m_sensorcheckbox.getData("sensor");
-                    	    		  removeChartTab(s.ident);
-                    	    		  registerForSensor(s.ident, false);
-                    	    	  }	                 	          
-                    	        }
-                    	      });
-                    	
-                    	m_group1.pack();
-                    }
-                }); 
+            	//set checkbox for sensor
+            	final Button sensorCheckbox = new Button(m_group1, SWT.CHECK);
+            	sensorCheckbox.setData("sensor", sensor);
+            	sensorCheckbox.setForeground(m_display.getSystemColor(SWT.COLOR_DARK_MAGENTA));
+            	sensorCheckbox.setText(sensor.description);
+
+            	sensorCheckbox.addSelectionListener(new SelectionAdapter() {
+            	      public void widgetSelected(SelectionEvent event) {
+            	    	  if(sensorCheckbox.getSelection())
+            	    	  {
+            	    		  addChartTab(sensor);
+            	    		  registerForSensor(sensor.ident, true);
+            	    	  }
+            	    	  else
+            	    	  {
+            	    		  removeChartTab(sensor.ident);
+            	    		  registerForSensor(sensor.ident, false);
+            	    	  }	                 	          
+            	        }
+            	      });
+            	
+            	m_group1.pack();
             }
-        } ).start();
+        }); 
 	}
 	
 	
@@ -232,32 +215,26 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 		container.setLayout(new FillLayout(SWT.VERTICAL));
 		container.setData("chartID", sensor.ident);
 		tabItem.setControl (container);
-		m_curChart = LineChartExample.createChart(container);
+		Chart newChart = LineChartExample.createChart(container);
 		
 		//set first value of chart to 0
 		double[] ySeries = { 0.0 };
-		ISeriesSet seriesSet = m_curChart.getSeriesSet();
+		ISeriesSet seriesSet = newChart.getSeriesSet();
 		ISeries series = seriesSet.createSeries(SeriesType.LINE, "line series");
 		series.setYSeries(ySeries);
 		
-		ITitle graphTitle = m_curChart.getTitle();
+		ITitle graphTitle = newChart.getTitle();
 		graphTitle.setText(sensor.description);
-		m_curChart.getAxisSet().getXAxes()[0].getTitle().setText("number of values");
-		m_curChart.getAxisSet().getYAxes()[0].getTitle().setText(sensor.dataType);
+		newChart.getAxisSet().getXAxes()[0].getTitle().setText("number of values");
+		newChart.getAxisSet().getYAxes()[0].getTitle().setText(sensor.dataType);
 	}
 	
 	public void removeGuiElements(final String sensorId)
 	{	
 		new Thread( new Runnable() {
             public void run() {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                }
                 m_shell.getDisplay().syncExec( new Runnable() {
                     public void run() {
-                    	
                 		Control[] checkboxchilds = m_group1.getChildren();
                 		for (Control child : checkboxchilds) {
                 			Sensor s = (Sensor) child.getData("sensor");
@@ -284,6 +261,7 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 		for (TabItem child : tabchilds) {
 			if(child.getData("tabID").equals(sensorId))
 			{
+				child.getControl().dispose();
 				child.dispose();
 				break;
 			}
@@ -296,8 +274,9 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 		if (LOGGING)
 			log.info("sensor activated: " + s);
 		if (m_autoRegister) {
-			if (LOGGING)
-//				log.info("automatically registering for sensor!");
+			if (LOGGING) {
+				log.info("automatically registering for sensor!");
+			}
 			if (!m_sensors.contains(s.ident)) {				
 				m_sensors.add(s.ident);
 			} else {
@@ -322,57 +301,56 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 
 	@Override
 	public void onNewSensorData(final String sensorId, double value) {
-		if (LOGGING)
+		if (LOGGING) {
 			log.info("sensordata " + sensorId + " " + value);
+		}
 		msgsReceivedCount++;
 
 		//add new data to chart diagramm
-			try {
-				log.info("NEW VAL!");
-        		
-				final double val = value;
-				if (m_curChart != null) {
-					
-					new Thread( new Runnable() {
-			            public void run() {
-			                try {
-			                    Thread.sleep(1000);
-			                } catch (InterruptedException e1) {
-			                    e1.printStackTrace();
-			                }
-			                m_shell.getDisplay().syncExec(new Runnable() {
-						public void run() {
-
-							//get right tab item container to adjust chart
-							Control[] tabchilds = m_tabFolder.getChildren();
-	                		for (Control child : tabchilds) {
-	                			if(child.getData("chartID").equals(sensorId))
-	                			{
-	                				Composite container = (Composite) child;
-	                				m_curChart = (Chart) container.getChildren()[0];
-	                				break;
-	                			}
-	                		}
-							
-							ILineSeries lineSeries = (ILineSeries) m_curChart.getSeriesSet().getSeries()[0];
-							double[] vals = lineSeries.getYSeries();
-							if (vals == null)
-								vals = new double[]{0.0, 1, -1, 0.0};
-							double[] newvals = new double[vals.length + 1];
-							System.arraycopy(vals, 0, newvals, 0, vals.length);
-							newvals[newvals.length - 1] = val;
-							lineSeries.setYSeries(newvals);
-							m_curChart.getAxisSet().adjustRange();
-							m_curChart.redraw();
-						}});
-				}
-
-		        } ).start();
+		log.info("NEW VAL!");
+		
+		final double val = value;
+		
+        m_shell.getDisplay().syncExec(new Runnable() {
+        	@Override
+			public void run() {
+try {
+				//get right tab item container to adjust chart
+				Control[] tabchilds = m_tabFolder.getChildren();
+				Chart targetChart = null;
+        		for (Control child : tabchilds) {
+        			Object o = child.getData("chartID");
+        			if(o != null && o.equals(sensorId))
+        			{
+        				Composite container = (Composite) child;
+        				targetChart = (Chart) container.getChildren()[0];
+        				break;
+        			}
+        		}
 				
-				}	
-			} catch (Exception e) {
-				log.warn("could not adjust chart ", e);
-			}
+        		if (targetChart != null) {
+        			try { 
+					ILineSeries lineSeries = (ILineSeries) targetChart.getSeriesSet().getSeries()[0];
+					double[] vals = lineSeries.getYSeries();
+					if (vals == null) {
+						vals = new double[]{0.0, 1, -1, 0.0};
+					}
+					double[] newvals = new double[vals.length + 1];
+					System.arraycopy(vals, 0, newvals, 0, vals.length);
+					newvals[newvals.length - 1] = val;
+					lineSeries.setYSeries(newvals);
+					targetChart.getAxisSet().adjustRange();
+					targetChart.redraw();
+        			} catch (Exception e) {
+        				e.printStackTrace();
+        			}
+        		} else {
+        			log.warn("no such sensor-chart!");
+        		}
+} catch (Exception e) {
+	e.printStackTrace();
+}
+			}});
 	}
 
 	@Override
