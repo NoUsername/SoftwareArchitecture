@@ -3,8 +3,6 @@ package at.fhooe.mcm441.client;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -32,7 +30,6 @@ import org.swtchart.ISeriesSet;
 import org.swtchart.ITitle;
 
 import at.fhooe.mcm441.commons.network.IConnectionStatusListener;
-import at.fhooe.mcm441.commons.network.NetworkService;
 import at.fhooe.mcm441.commons.network.NetworkServiceClient;
 import at.fhooe.mcm441.commons.protocol.IClientSideListener;
 import at.fhooe.mcm441.sensor.Sensor;
@@ -66,7 +63,6 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 	Text winConsole = null;
 	Button button = null;
 	
-	private NetworkService server;
 	private NetworkServiceClient client;
 
 	//Gui elements
@@ -131,7 +127,7 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 		      public void widgetDisposed(DisposeEvent event) {
 		        m_shell.dispose();
 		      }
-		    });
+	    });
 	}
 	
 	public void runGui() {
@@ -146,8 +142,7 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 			
 			if (client != null)
 				client.stop();
-			if (server != null)
-				server.stop();
+			System.exit(0);
 		}
 
 	
@@ -298,7 +293,7 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 		
 		final double val = value;
 		
-        m_shell.getDisplay().syncExec(new Runnable() {
+		m_display.syncExec(new Runnable() {
         	@Override
 			public void run() {
 try {

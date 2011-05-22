@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
@@ -24,7 +25,6 @@ import at.fhooe.mcm441.commons.Configuration;
 import at.fhooe.mcm441.commons.Configuration.SettingType;
 import at.fhooe.mcm441.commons.network.Client;
 import at.fhooe.mcm441.commons.protocol.IAdminClientSideListener;
-import at.fhooe.mcm441.sensor.Sensor;
 
 public class SensorManager extends SensorViewer implements IAdminClientSideListener {
 	private static final Logger log = org.slf4j.LoggerFactory.getLogger(SensorManager.class.getName());
@@ -36,10 +36,6 @@ public class SensorManager extends SensorViewer implements IAdminClientSideListe
 	private static final boolean HARDCORETEST = false; // if this is true, not one but MANY clients are started
 	private static final boolean LOGGING = !HARDCORETEST;
 	
-	private static final int MIN_STAY_CONNECTED_TIME = 120; // seconds
-	private static final int STARTED_CLIENTS_COUNT = 100;
-	private static final int MIN_STARTING_OFFSET = 100; // milliseconds
-	
 	private ArrayList<String> m_all_sensors;
 	public Vector<Configuration> configItems;
 	
@@ -47,8 +43,7 @@ public class SensorManager extends SensorViewer implements IAdminClientSideListe
 	private static Map<String, Configuration> m_configItems;
 	
 	public static void main(String[] args) throws Exception{
-		SensorManager sc = new SensorManager(false, 0);
-	
+		new SensorManager(false, 0);
 	}
 	
 
@@ -86,94 +81,32 @@ public class SensorManager extends SensorViewer implements IAdminClientSideListe
 		
 	    m_group3 = new Group(composite2, SWT.NULL);
 	    m_group3.setText("settings");
-		gridData = new GridData(GridData.VERTICAL_ALIGN_FILL);
-		m_group3.setLayoutData(gridData);
-		m_group3.setLayout(new GridLayout(1, false));
+	    m_group3.setLayout(new FillLayout());
+//		gridData = new GridData(GridData.VERTICAL_ALIGN_FILL);
+//		m_group3.setLayoutData(gridData);
+//		m_group3.setLayout(new GridLayout(1, false));
 		
-		composite3 = new Composite(m_group3, SWT.NONE);
-		gridData = new GridData(GridData.END);
-		RowLayout rl = new RowLayout();
+	    ScrolledComposite container = new ScrolledComposite (m_group3, SWT.V_SCROLL);
+		composite3 = new Composite(container, SWT.NULL);
+		
+		RowLayout rl = new RowLayout(SWT.VERTICAL);
+		
 		rl.pack = true;
 		rl.fill = true;
 		
+		
 		composite3.setLayout(rl);
+		container.setContent(composite3);
 		
-			
-
-	}
-	
-	@Override
-	public void registerForSensor(String sensorID, boolean register)
-	{
-		m_admin_con.registerForSensor(sensorID, register);
-		
-		if((m_configItems != null) && (m_admin_con != null))
-		{
-			Configuration conf = m_configItems.get(sensorID);
-			m_admin_con.setSensorConfig(sensorID, conf.id, register +"");
-		}
+		container.setExpandHorizontal(false);
+		container.setExpandVertical(true);
+		container.setMinHeight(100);
+		container.setMinWidth(400);
 		
 	}
-	
-	public void setSettingElement()
-	{
-		new Thread( new Runnable() {
-            public void run() {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                }
-                m_shell.getDisplay().syncExec( new Runnable() {
-                    public void run() {
-
-                    	Configuration conf = configItems.firstElement();
-                    	if(conf.type == Configuration.SettingType.number)
-                		{
-                			Label label_freq = new Label(composite3, SWT.LEFT);
-                			label_freq.setText(conf.displayName);
-
-                		    Text text_freq = new Text(composite3, SWT.BORDER);
-                		    text_freq.setText(conf.value);
-                		    text_freq.setLocation(100, 100);
-                		}
-
-                    	composite3.pack();
-                    	configItems.remove(conf);
-                    }
-                }); 
-            }
-        } ).start();
-
-	}
-
-/*
-	@Override
-	public void onSensorActivated(Sensor s) {
-		if (LOGGING)
-			log.info("sensor activated: " + s);
-		if (m_autoRegister) {
-			if (LOGGING)
-//				log.info("automatically registering for sensor!");
-			if (!m_sensors.contains(s.ident)) {				
-				m_sensors.add(s.ident);
-			} else {
-				//log.info("already registered for that sensor");
-			}
-		}
-		m_sensors_map.put(s.ident, s);
-		msgsReceivedCount++;
-	}*/
-	
-	@Override
-	public void onSensorDeactivated(String sensorId) {
-		if (LOGGING)
-			log.info("sensor " + sensorId + " deactivated");
-		msgsReceivedCount++;
-	}
 
 	@Override
-	public void onSensorConfigurationItem(String sensorId, Configuration conf) {
+	public void onSensorConfigurationItem(final String sensorId, final Configuration conf) {
 		if (LOGGING)
 			log.info("sensor conf item for sensor " + sensorId + " " + conf);
 		msgsReceivedCount++;
@@ -183,9 +116,15 @@ public class SensorManager extends SensorViewer implements IAdminClientSideListe
 		if(!m_all_sensors.contains(sensorId) && sensorId != null)
 		{
 			m_all_sensors.add(sensorId);
-			registerForSensor(sensorId, true);
 			//super.addGuiElements(m_sensors_map.get(sensorId));
 		}
+		
+		m_display.syncExec(new Runnable() {
+			@Override
+			public void run() {
+				createConfigItem(composite3, sensorId, conf);
+			}
+		});
 		
 	}
 	
@@ -199,7 +138,7 @@ public class SensorManager extends SensorViewer implements IAdminClientSideListe
 		m_display.syncExec(new Runnable() {
 			@Override
 			public void run() {
-				createConfigItem(composite3, conf);
+				createConfigItem(composite3, null, conf);
 			}
 		});
 		
@@ -212,27 +151,18 @@ public class SensorManager extends SensorViewer implements IAdminClientSideListe
 			log.info("client connected " + client);
 		msgsReceivedCount++;
 		
-		new Thread( new Runnable() {
+        m_shell.getDisplay().syncExec( new Runnable() {
             public void run() {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                }
-                m_shell.getDisplay().syncExec( new Runnable() {
-                    public void run() {
-                    	
-                    	//show connect clients
-                    	// Create a read-only text field
-                	    Text clients = new Text(m_group2, SWT.READ_ONLY | SWT.BORDER);
-                	    clients.setText(client.m_address);
-                	    clients.setData("client", client.m_id);
-                	    
-                	    m_group2.pack();
-                    }
-                }); 
+            	
+            	//show connect clients
+            	// Create a read-only text field
+        	    Text clients = new Text(m_group2, SWT.READ_ONLY | SWT.BORDER);
+        	    clients.setText(client.m_address);
+        	    clients.setData("client", client.m_id);
+        	    
+        	    m_group2.pack();
             }
-        } ).start();
+        });
 	}
 
 	@Override
@@ -241,32 +171,22 @@ public class SensorManager extends SensorViewer implements IAdminClientSideListe
 			log.info("client disconnected " + client);
 		msgsReceivedCount++;
 		
-		new Thread( new Runnable() {
-            public void run() {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e1) {
-                    e1.printStackTrace();
-                }
-                m_shell.getDisplay().syncExec( new Runnable() {
-                    public void run() {
-                    	
-                    	//remove clients from gui
-                    	Control[] checkboxchilds = m_group2.getChildren();
-                    	System.out.println("blub" + checkboxchilds);
-                		for (Control child : checkboxchilds) {
-                			if(client.m_id.equals(child.getData("client")))
-                			{
-                				System.out.println("blub");
-                				child.dispose();
-                				break;
-                			}
-                		}
-                		m_group2.pack();
-                    }
-                }); 
-            }
-        } ).start();
+	    m_shell.getDisplay().syncExec( new Runnable() {
+	        public void run() {
+	        	//remove clients from gui
+	        	Control[] checkboxchilds = m_group2.getChildren();
+	        	System.out.println("blub" + checkboxchilds);
+	    		for (Control child : checkboxchilds) {
+	    			if(client.m_id.equals(child.getData("client")))
+	    			{
+	    				System.out.println("blub");
+	    				child.dispose();
+	    				break;
+	    			}
+	    		}
+	    		m_group2.pack();
+	        }
+	    }); 
 	}
 	
 	/**
@@ -274,34 +194,64 @@ public class SensorManager extends SensorViewer implements IAdminClientSideListe
 	 * @param target
 	 * @param conf
 	 */
-	public void createConfigItem(Composite target, final Configuration conf) {
+	public void createConfigItem(Composite target, final String sensorId, final Configuration conf) {
+		
+		Composite c = new Composite(target, SWT.NULL);
+		RowLayout rl = new RowLayout();
+		rl.pack = true;
+		
+		Label txt = new Label(c, SWT.NULL);
+		txt.setText(conf.displayName);
+		
+		
 		if (conf.type == SettingType.text || conf.type == SettingType.number) {
-			Composite c = new Composite(target, SWT.FILL);
-			//Composite c = target;
-			RowLayout rl = new RowLayout();
-			rl.fill = true;
-			c.setLayout(rl);
-			Label txt = new Label(c, SWT.DEFAULT);
-			txt.setText(conf.displayName);
-			
 			final Text entry = new Text(c, SWT.SINGLE);
 			entry.setText(conf.value);
 			
-			Button apply = new Button(c, SWT.DEFAULT);
+			Button apply = new Button(c, SWT.NULL);
+			apply.setText("apply");
+			
 			apply.addSelectionListener(new SelectionListener() {
 				@Override
 				public void widgetSelected(SelectionEvent arg0) {
-					m_admin_con.setServerConfig(conf.id, entry.getText());
+					if (sensorId == null) {
+						m_admin_con.setServerConfig(conf.id, entry.getText());
+					} else {
+						m_admin_con.setSensorConfig(sensorId, conf.id, entry.getText());
+					}
 				}
 				
 				@Override
 				public void widgetDefaultSelected(SelectionEvent arg0) {}
 			});
+		} else {
+			// checkbox:
 			
-			target.pack();
-			log.info("added conf item");
+			final Button entry = new Button(c, SWT.CHECK);
+			entry.setSelection("true".equals(conf.value));
 			
+			Button apply = new Button(c, SWT.NULL);
+			apply.setText("apply");
+			apply.addSelectionListener(new SelectionListener() {
+				@Override
+				public void widgetSelected(SelectionEvent arg0) {
+					if (sensorId == null) {
+						m_admin_con.setServerConfig(conf.id, "" + entry.getSelection());
+					} else {
+						m_admin_con.setSensorConfig(sensorId, conf.id, "" + entry.getSelection());
+					}
+				}
+				
+				@Override
+				public void widgetDefaultSelected(SelectionEvent arg0) {}
+			});
 		}
+		
+		c.setLayout(rl);
+		c.pack();
+		target.pack(true);
+		log.info("added conf item");
+			
 	}
 	
 }
