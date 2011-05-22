@@ -73,10 +73,10 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 	protected Group m_group1;
 	protected TabFolder m_tabFolder;
 	
-	public void startSensorViewer(boolean autoRegister, int disconnectAfterSeconds) throws Exception {
+	public void startSensorViewer(boolean autoRegister, int disconnectAfterSeconds, Display display) throws Exception {
 		m_autoRegister = autoRegister;
 		
-		m_display = new Display ();
+		m_display = display;
 		m_shell = new Shell(m_display);
 		setupGui();
 		
@@ -166,7 +166,6 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
             	//set checkbox for sensor
             	final Button sensorCheckbox = new Button(m_group1, SWT.CHECK);
             	sensorCheckbox.setData("sensor", sensor);
-            	sensorCheckbox.setForeground(m_display.getSystemColor(SWT.COLOR_DARK_MAGENTA));
             	sensorCheckbox.setText(sensor.description);
 
             	sensorCheckbox.addSelectionListener(new SelectionAdapter() {

@@ -45,7 +45,7 @@ public class SensorManager extends SensorViewer implements
 
 	public static void main(String[] args) throws Exception {
 		SensorManager client = new SensorManager();
-		ClientIpInput setIP = new ClientIpInput(client);
+		new ClientIpInput(client);
 	}
 
 	// Gui elements
