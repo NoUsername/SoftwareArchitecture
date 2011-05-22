@@ -40,8 +40,7 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 	public static String HOST = "localhost";
 	public static int PORT = 4444;
 	
-	protected static final boolean HARDCORETEST = false; // if this is true, not one but MANY clients are started
-	protected static final boolean LOGGING = !HARDCORETEST;
+	protected static final boolean LOGGING = true;
 
 	public Connection m_con;
 	protected boolean m_autoRegister = false;
@@ -76,7 +75,8 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 	public void startSensorViewer(boolean autoRegister, int disconnectAfterSeconds) throws Exception {
 		m_autoRegister = autoRegister;
 		
-		m_display = new Display ();
+		
+		m_display = Display.getDefault();
 		m_shell = new Shell(m_display);
 		setupGui();
 		
@@ -91,8 +91,8 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 	
 	public void setConnectionInfo(String HOST, int PORT)
 	{
-		this.HOST = HOST;
-		this.PORT = PORT;
+		SensorViewer.HOST = HOST;
+		SensorViewer.PORT = PORT;
 	}
 	
 	public void newConnection() throws Exception
@@ -175,6 +175,9 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
             	    	  {
             	    		  addChartTab(sensor);
             	    		  registerForSensor(sensor.ident, true);
+            	    		  if (LOGGING) {
+            	    			  log.info("registering for sensor " + sensor.ident);
+            	    		  }
             	    	  }
             	    	  else
             	    	  {
@@ -303,7 +306,9 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 		msgsReceivedCount++;
 
 		//add new data to chart diagramm
-		log.info("NEW VAL!");
+		if (LOGGING) {
+			log.info("NEW VAL!");
+		}
 		
 		final double val = value;
 		

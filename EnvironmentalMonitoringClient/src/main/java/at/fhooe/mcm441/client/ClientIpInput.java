@@ -31,12 +31,12 @@ public class ClientIpInput {
 	shell.setLayout (formLayout);
 
     final Label l1 = new Label(shell, SWT.NONE);
-    l1.setText("HOST");
+    l1.setText("Host");
     FormData fd = new FormData();
     l1.setLayoutData(fd);
 
     final Label l2 = new Label(shell, SWT.NONE);
-    l2.setText("IP");
+    l2.setText("Port");
     fd = new FormData();
     fd.top = new FormAttachment(l1, 5);
     l2.setLayoutData(fd);
@@ -46,12 +46,14 @@ public class ClientIpInput {
     fd.top = new FormAttachment(l1, 0, SWT.TOP);
     fd.left = new FormAttachment(l1, 10);
     t1.setLayoutData(fd);
+    t1.setText("localhost");
 
     final Text t2 = new Text(shell, SWT.BORDER | SWT.SINGLE);
     fd = new FormData();
     fd.top = new FormAttachment(l2, 0, SWT.TOP);
     fd.left = new FormAttachment(l2, 30);
     t2.setLayoutData(fd);
+    t2.setText("4444");
     
     Button cancel = new Button (shell, SWT.PUSH);
 	cancel.setText ("Cancel");
@@ -77,13 +79,16 @@ public class ClientIpInput {
 	ok.addSelectionListener (new SelectionAdapter () {
 		public void widgetSelected (SelectionEvent e) {
 			client.setConnectionInfo(t1.getText(), Integer.parseInt(t2.getText()));
-			try {
-				client.startSensorViewer(false, 0);
-			} catch (Exception e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-			shell.close ();
+			display.syncExec(new Runnable() {
+				public void run() {
+					try {
+						shell.setVisible(false);
+						shell.close ();
+						client.startSensorViewer(false, 0);
+					} catch (Exception e1) {
+						e1.printStackTrace();
+					}
+				}});
 		}
 	});
 

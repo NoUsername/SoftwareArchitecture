@@ -33,8 +33,6 @@ public class SensorManager extends SensorViewer implements
 			.getLogger(SensorManager.class.getName());
 
 	public AdminConnection m_admin_con;
-
-	public static int PORT = 4445;
 	
 	private ArrayList<String> m_all_sensors;
 	private Map<String, Control> m_all_configs;
