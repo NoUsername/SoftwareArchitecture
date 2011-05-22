@@ -44,7 +44,8 @@ public class SensorManager extends SensorViewer implements
 	private static Map<String, Configuration> m_configItems;
 
 	public static void main(String[] args) throws Exception {
-		new SensorManager(false, 0);
+		SensorManager client = new SensorManager();
+		ClientIpInput setIP = new ClientIpInput(client);
 	}
 
 	// Gui elements
@@ -52,9 +53,9 @@ public class SensorManager extends SensorViewer implements
 	private Group m_group3;
 	private Composite composite3;
 
-	public SensorManager(boolean autoRegister, int disconnectAfterSeconds)
+	public SensorManager()
 			throws Exception {
-		super(autoRegister, disconnectAfterSeconds);
+		super();
 	}
 
 	@Override

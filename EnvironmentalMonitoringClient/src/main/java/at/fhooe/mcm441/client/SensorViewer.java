@@ -54,7 +54,9 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 	protected static long msgsReceivedCount = 0;
 	
 	public static void main(String[] args) throws Exception{
-		new SensorViewer(false, 0);
+		
+		SensorViewer client = new SensorViewer();
+		new ClientIpInput(client);
 	}
 	
 	Shell m_shell;
@@ -71,7 +73,7 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 	protected Group m_group1;
 	protected TabFolder m_tabFolder;
 	
-	public SensorViewer(boolean autoRegister, int disconnectAfterSeconds) throws Exception {
+	public void startSensorViewer(boolean autoRegister, int disconnectAfterSeconds) throws Exception {
 		m_autoRegister = autoRegister;
 		
 		m_display = new Display ();
@@ -85,6 +87,12 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 		}		
 		
 		runGui();
+	}
+	
+	public void setConnectionInfo(String HOST, int PORT)
+	{
+		this.HOST = HOST;
+		this.PORT = PORT;
 	}
 	
 	public void newConnection() throws Exception
