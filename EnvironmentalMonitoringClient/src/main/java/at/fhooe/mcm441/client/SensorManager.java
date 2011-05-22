@@ -37,6 +37,7 @@ public class SensorManager extends SensorViewer implements
 	public static int PORT = 4445;
 	
 	private ArrayList<String> m_all_sensors;
+	private Map<String, Control> m_all_configs;
 	public Vector<Configuration> configItems;
 
 	// key = sensorID
@@ -62,6 +63,7 @@ public class SensorManager extends SensorViewer implements
 		m_con = m_admin_con;
 		m_configItems = new HashMap<String, Configuration>();
 		m_all_sensors = new ArrayList<String>();
+		m_all_configs = new HashMap<String, Control>();
 
 	}
 
@@ -212,9 +214,28 @@ public class SensorManager extends SensorViewer implements
 		//RowLayout rl = new RowLayout();
 		Composite c = target;
 		//rl.pack = true;
-
+		
+		// to prevent adding some config twice
+		if(m_all_configs.containsKey(conf.id))
+		{
+			// try to update control value:
+			Control ctrl = m_all_configs.get(conf.id);
+			if (conf.type == SettingType.bool) {
+				((Button)ctrl).setSelection("true".equals(conf.value));
+			} else {
+				((Text)ctrl).setText(conf.value);
+			}
+			return;
+		}
+		
+		
+		Label txt = new Label(c, SWT.NULL);
+		txt.setText(conf.displayName);
+		Control entryControl = null;
 		if (conf.type == SettingType.text || conf.type == SettingType.number) {
+			
 			final Text entry = new Text(c, SWT.SINGLE | SWT.BORDER);
+			entryControl = entry;
 			entry.setText(conf.value);
 			GridData gridData = new GridData(GridData.CENTER);
 			gridData.horizontalAlignment = GridData.CENTER;
@@ -239,17 +260,11 @@ public class SensorManager extends SensorViewer implements
 				}
 			});
 		} else {
-			// checkbox:
-
-			if(!m_all_sensors.contains(sensorId))
-			{
-				
-			Label txt = new Label(c, SWT.NULL);
-			txt.setText(conf.displayName);
-				
+			// checkbox:			
 			m_all_sensors.add(sensorId);
 				
 			final Button entry = new Button(c, SWT.CHECK);
+			entryControl = entry;
 			entry.setSelection("true".equals(conf.value));
 			GridData gridData = new GridData(GridData.CENTER);
 			gridData.horizontalAlignment = GridData.CENTER;
@@ -273,8 +288,10 @@ public class SensorManager extends SensorViewer implements
 				public void widgetDefaultSelected(SelectionEvent arg0) {
 				}
 			});
-			}
+			
 		}
+		
+		m_all_configs.put(conf.id, entryControl);
 
 		//c.setLayout(rl);
 		c.pack();
