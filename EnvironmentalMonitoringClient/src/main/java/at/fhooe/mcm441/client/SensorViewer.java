@@ -263,14 +263,16 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 			if (LOGGING) {
 				log.info("automatically registering for sensor!");
 			}
-			if (!m_sensors.contains(s.ident)) {				
-				m_sensors.add(s.ident);
-			} else {
+			 else {
 				//log.info("already registered for that sensor");
 			}
 		}
-		m_sensors_map.put(s.ident, s);
-		addGuiElements(s);
+		
+		if (!m_sensors.contains(s.ident)) {				
+			m_sensors.add(s.ident);
+			addGuiElements(s);
+		}
+		
 		msgsReceivedCount++;
 	}
 	
