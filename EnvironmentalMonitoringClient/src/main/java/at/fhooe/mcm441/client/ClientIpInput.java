@@ -13,6 +13,14 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+/**
+ * class for setting the host and port for the client to connect to the server
+ * sensorviewer port: 4444
+ * sensormanager port: 4445
+ * 
+ * @author Melanie Schmidt
+ *
+ */
 
 public class ClientIpInput {
     private Display display;
@@ -102,8 +110,7 @@ public class ClientIpInput {
 			
 			try {
 				if((t1.getText().isEmpty()) && (t2.getText().isEmpty()))
-				{
-					
+				{				
 					MessageBox messageBox = new MessageBox(shell, style);
 				    messageBox.setMessage("Please insert HOST and PORT");
 				    int rc = messageBox.open();
@@ -113,7 +120,7 @@ public class ClientIpInput {
 				        display.syncExec(
 				        		  new Runnable() {
 				        		    public void run(){
-				        		    	display.dispose();
+				        		    	display.dispose();			        		  
 				        		    	new ClientIpInput(client);
 				        		    }
 				        		  });
@@ -127,7 +134,8 @@ public class ClientIpInput {
 				else
 				{
 					client.setConnectionInfo(t1.getText(), Integer.parseInt(t2.getText()));
-					client.startSensorViewer(false, 0, display);
+					display.dispose();
+					client.startSensorViewer(false, 0);
 				}
 				
 			} catch (Exception e1) {

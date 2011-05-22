@@ -1,10 +1,8 @@
 package at.fhooe.mcm441.client;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -34,6 +32,14 @@ import at.fhooe.mcm441.commons.network.NetworkServiceClient;
 import at.fhooe.mcm441.commons.protocol.IClientSideListener;
 import at.fhooe.mcm441.sensor.Sensor;
 
+/**
+ * client  for the user.
+ * shows only the active sensors with sensor data
+ * 
+ * @author Melanie Schmidt, Paul Klingelhuber
+ *
+ */
+
 public class SensorViewer implements IClientSideListener, IConnectionStatusListener {
 	private static final Logger log = org.slf4j.LoggerFactory.getLogger(SensorViewer.class.getName());
 
@@ -47,7 +53,6 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 	protected boolean m_autoRegister = false;
 	protected ArrayList<String> m_sensors = new ArrayList<String>();
 	//key = sensorID
-	protected static Map<String, Sensor> m_sensors_map = new HashMap<String, Sensor>();
 
 	protected Boolean connected = null;
 	private static int clientsConnectedCount = 0;
@@ -68,15 +73,15 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 	private NetworkServiceClient client;
 
 	//Gui elements
-	protected Composite composite1;
+	protected ScrolledComposite composite1;
 	protected Composite composite2;
 	protected Group m_group1;
 	protected TabFolder m_tabFolder;
 	
-	public void startSensorViewer(boolean autoRegister, int disconnectAfterSeconds, Display display) throws Exception {
+	public void startSensorViewer(boolean autoRegister, int disconnectAfterSeconds) throws Exception {
 		m_autoRegister = autoRegister;
 		
-		m_display = display;
+		m_display = new Display();
 		m_shell = new Shell(m_display);
 		setupGui();
 		
@@ -107,18 +112,19 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 		gridData = new GridData();
 		m_shell.setLayout(layout);
 		
-		composite1 = new Composite(m_shell, SWT.NONE);
+		composite1 = new ScrolledComposite (m_shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		gridData = new GridData(150,400);
 		composite1.setLayoutData(gridData);
 		composite1.setLayout(new GridLayout(2, false));
-		//composite1.setLayout(new FillLayout(SWT.VERTICAL));
-		
+			
 		m_group1 = new Group(composite1, SWT.NULL);
 		m_group1.setText("Sensors");
 		gridData = new GridData(150, 200);
 		gridData.verticalAlignment = GridData.BEGINNING;
 		m_group1.setLayoutData(gridData);
 		m_group1.setLayout(new GridLayout(1, false));
+		composite1.setContent(m_group1);
+		composite1.setExpandHorizontal(true);
 		
 		composite2 = new Composite(m_shell, SWT.NONE);
 		gridData = new GridData(450,400);
@@ -133,7 +139,7 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 		m_tabFolder.setLayout(new FillLayout());
 	    
 	    
-		m_shell.setText("Sensor Manager");
+		m_shell.setText("SensorViewer");
 		
 		m_shell.addDisposeListener(new DisposeListener() {
 		      public void widgetDisposed(DisposeEvent event) {
