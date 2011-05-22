@@ -57,7 +57,7 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 	protected static long msgsReceivedCount = 0;
 	
 	public static void main(String[] args) throws Exception{
-		new SensorViewer(true, 0);
+		new SensorViewer(false, 0);
 	}
 	
 	Shell m_shell;
