@@ -7,12 +7,13 @@ import java.util.Vector;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -28,13 +29,10 @@ import at.fhooe.mcm441.commons.protocol.IAdminClientSideListener;
 
 public class SensorManager extends SensorViewer implements IAdminClientSideListener {
 	private static final Logger log = org.slf4j.LoggerFactory.getLogger(SensorManager.class.getName());
-
-	public static String HOST = "localhost";
-	public static int PORT = 4445;
 	
 	public AdminConnection m_admin_con;
-	private static final boolean HARDCORETEST = false; // if this is true, not one but MANY clients are started
-	private static final boolean LOGGING = !HARDCORETEST;
+	
+	public static int PORT = 4445;
 	
 	private ArrayList<String> m_all_sensors;
 	public Vector<Configuration> configItems;
@@ -73,35 +71,55 @@ public class SensorManager extends SensorViewer implements IAdminClientSideListe
 		super.setupGui();
 		
 		GridData gridData;
-		m_group2 = new Group(composite1, SWT.NULL);
+		m_group2 = new Group(m_shell, SWT.NULL);
 		m_group2.setText("connected clients");
 		gridData = new GridData(150, 200);
+		gridData.verticalAlignment = GridData.BEGINNING;
 		m_group2.setLayoutData(gridData);
 		m_group2.setLayout(new GridLayout(1, false));
 		
-	    m_group3 = new Group(composite2, SWT.NULL);
+	    m_group3 = new Group(m_shell, SWT.NULL);
 	    m_group3.setText("settings");
-	    m_group3.setLayout(new FillLayout());
-//		gridData = new GridData(GridData.VERTICAL_ALIGN_FILL);
-//		m_group3.setLayoutData(gridData);
-//		m_group3.setLayout(new GridLayout(1, false));
+	    
+		gridData = new GridData();
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.verticalAlignment = GridData.FILL;
+		gridData.grabExcessVerticalSpace = true;
+		gridData.grabExcessHorizontalSpace = true;
 		
-	    ScrolledComposite container = new ScrolledComposite (m_group3, SWT.V_SCROLL);
+		m_group3.setLayoutData(gridData);
+		m_group3.setLayout(new GridLayout(1, false));
+		
+	    final ScrolledComposite container = new ScrolledComposite (m_group3, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 		composite3 = new Composite(container, SWT.NULL);
 		
-		RowLayout rl = new RowLayout(SWT.VERTICAL);
+		gridData = new GridData();
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.grabExcessVerticalSpace = true;
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.verticalAlignment = GridData.FILL;
+		composite3.setLayout(new GridLayout(3, false));
+		composite3.setLayoutData(gridData);
 		
-		rl.pack = true;
-		rl.fill = true;
-		
-		
-		composite3.setLayout(rl);
 		container.setContent(composite3);
 		
-		container.setExpandHorizontal(false);
-		container.setExpandVertical(true);
+		gridData = new GridData();
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.grabExcessVerticalSpace = true;
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.verticalAlignment = GridData.FILL;
+		container.setLayoutData(gridData);
+		
+		container.addControlListener(new ControlAdapter() {
+		      public void controlResized(ControlEvent e) {
+		        Rectangle r = container.getClientArea();
+		        container.setMinSize(m_group3.computeSize(r.width,
+		            SWT.DEFAULT));
+		      }
+		    });
+				
 		container.setMinHeight(100);
-		container.setMinWidth(400);
+		container.setMinWidth(200);
 		
 	}
 
@@ -196,17 +214,21 @@ public class SensorManager extends SensorViewer implements IAdminClientSideListe
 	 */
 	public void createConfigItem(Composite target, final String sensorId, final Configuration conf) {
 		
-		Composite c = new Composite(target, SWT.NULL);
-		RowLayout rl = new RowLayout();
-		rl.pack = true;
+		//Composite c = new Composite(target, SWT.NULL);
+		//RowLayout rl = new RowLayout();
+		Composite c = target;
+		//rl.pack = true;
 		
 		Label txt = new Label(c, SWT.NULL);
 		txt.setText(conf.displayName);
 		
 		
 		if (conf.type == SettingType.text || conf.type == SettingType.number) {
-			final Text entry = new Text(c, SWT.SINGLE);
+			final Text entry = new Text(c, SWT.SINGLE | SWT.BORDER);
 			entry.setText(conf.value);
+			GridData gridData = new GridData(GridData.CENTER);
+			gridData.horizontalAlignment = GridData.CENTER;
+			entry.setLayoutData(gridData);
 			
 			Button apply = new Button(c, SWT.NULL);
 			apply.setText("apply");
@@ -229,6 +251,9 @@ public class SensorManager extends SensorViewer implements IAdminClientSideListe
 			
 			final Button entry = new Button(c, SWT.CHECK);
 			entry.setSelection("true".equals(conf.value));
+			GridData gridData = new GridData(GridData.CENTER);
+			gridData.horizontalAlignment = GridData.CENTER;
+			entry.setLayoutData(gridData);
 			
 			Button apply = new Button(c, SWT.NULL);
 			apply.setText("apply");
@@ -247,7 +272,7 @@ public class SensorManager extends SensorViewer implements IAdminClientSideListe
 			});
 		}
 		
-		c.setLayout(rl);
+		//c.setLayout(rl);
 		c.pack();
 		target.pack(true);
 		log.info("added conf item");

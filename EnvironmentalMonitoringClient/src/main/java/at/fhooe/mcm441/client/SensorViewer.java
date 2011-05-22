@@ -40,8 +40,8 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 	public static String HOST = "localhost";
 	public static int PORT = 4444;
 	
-	private static final boolean HARDCORETEST = false; // if this is true, not one but MANY clients are started
-	private static final boolean LOGGING = !HARDCORETEST;
+	protected static final boolean HARDCORETEST = false; // if this is true, not one but MANY clients are started
+	protected static final boolean LOGGING = !HARDCORETEST;
 
 	public Connection m_con;
 	protected boolean m_autoRegister = false;
@@ -93,35 +93,39 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 	}
 	
 	public void setupGui() {
-		
-		GridLayout layout = new GridLayout(3, false);
-		m_shell.setLayout(layout);
-
 		GridData gridData;
+		
+		GridLayout layout = new GridLayout(2, false);
+		gridData = new GridData();
+		m_shell.setLayout(layout);
 		
 		composite1 = new Composite(m_shell, SWT.NONE);
 		gridData = new GridData(150,400);
 		composite1.setLayoutData(gridData);
 		composite1.setLayout(new GridLayout(2, false));
-		composite1.setLayout(new FillLayout(SWT.VERTICAL));
+		//composite1.setLayout(new FillLayout(SWT.VERTICAL));
 		
 		m_group1 = new Group(composite1, SWT.NULL);
 		m_group1.setText("Sensors");
 		gridData = new GridData(150, 200);
+		gridData.verticalAlignment = GridData.BEGINNING;
 		m_group1.setLayoutData(gridData);
 		m_group1.setLayout(new GridLayout(1, false));
 		
 		composite2 = new Composite(m_shell, SWT.NONE);
 		gridData = new GridData(450,400);
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.verticalAlignment = GridData.FILL;
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.grabExcessVerticalSpace = true;
 		composite2.setLayoutData(gridData);
-		composite2.setLayout(new FillLayout(SWT.VERTICAL));
+		composite2.setLayout(new FillLayout());
 		
 		m_tabFolder = new TabFolder(composite2, SWT.BORDER);
+		m_tabFolder.setLayout(new FillLayout());
 	    
 	    
 		m_shell.setText("Sensor Manager");
-	
-		m_shell.setMinimumSize(400, 400);
 		
 		m_shell.addDisposeListener(new DisposeListener() {
 		      public void widgetDisposed(DisposeEvent event) {
