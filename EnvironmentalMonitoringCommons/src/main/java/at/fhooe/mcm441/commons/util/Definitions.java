@@ -5,23 +5,6 @@ public class Definitions {
 	// PREFERENCES
 	// =========================================
 	public static final String PREFERENCES_FILE = "EnvironmentalMonitoringServer.conf";
-
-	// =========================================
-	// XML
-	// =========================================
-	/**
-	 * the xml entry string for the sensors
-	 */
-	public static final String XML_TAG_SENSORS = "Sensors";
-	/**
-	 * the xml entry string for the server
-	 */
-	public static final String XML_TAG_SERVER = "Server";
-	/**
-	 * the xml attribute name for the value
-	 */
-	public static final String XML_ATTR_VALUE = "value";
-
 	// =========================================
 	// PREFIXES
 	// =========================================
