@@ -26,6 +26,11 @@ public class PooledExecutor implements IFinished {
 	private ExecutorService m_execService;
 	/** inform that guy when the queue gets too long */
 	private IPoolObserver m_observer;
+	/** used to check for timeouts, currently we only use one which
+	 * could be problematic when having many timeouts, but it helps us save
+	 * threads
+	 */
+	private Timer timeoutTimer;
 	
 	
 	public PooledExecutor(int size, int waitQueueWarningLimit, int maxOverallResponseTime, IPoolObserver callback) {
@@ -34,6 +39,7 @@ public class PooledExecutor implements IFinished {
 		m_maxExecutionTime = maxOverallResponseTime;
 		m_observer = callback;
 		m_execService = Executors.newFixedThreadPool(m_size);
+		timeoutTimer = new Timer();
 	}
 	
 	/**
@@ -59,18 +65,21 @@ public class PooledExecutor implements IFinished {
 		
 		Runnable wrapped = new Runnable() {
 			public void run() {
-				Timer t = new Timer();
+				TimerTask onTimeout = null;
 				if (callback != null) {
-					t.schedule(new TimerTask() {
+					onTimeout = new TimerTask() {
 						@Override
 						public void run() {
 							callback.timedOut();
 						}
-					}, timeout);
+					};
+					timeoutTimer.schedule(onTimeout, timeout);
 				}
 				r.run();
 				PooledExecutor.this.finished();
-				t.cancel();
+				if (onTimeout != null) {
+					onTimeout.cancel();
+				}
 			}
 		};
 		

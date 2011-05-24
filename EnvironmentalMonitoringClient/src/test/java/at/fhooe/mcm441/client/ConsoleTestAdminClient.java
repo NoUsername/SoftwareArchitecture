@@ -17,16 +17,17 @@ import at.fhooe.mcm441.sensor.Sensor;
 public class ConsoleTestAdminClient implements IAdminClientSideListener,
 		IConnectionStatusListener {
 	private static final Logger log = org.slf4j.LoggerFactory.getLogger(ConsoleTestAdminClient.class.getName());
-
-	public static String HOST = "localhost";
-	public static int PORT = 4445;
 	
 	private static final boolean HARDCORETEST = true; // if this is true, not one but MANY clients are started
 	private static final boolean LOGGING = !HARDCORETEST;
+	private static final boolean BE_ADMIN = false; // if true the client will be an admin client, which means more stuff to do for the server
+	private static final int STARTED_CLIENTS_COUNT = 150;
 	
-	private static final int MIN_STAY_CONNECTED_TIME = 120; // seconds
-	private static final int STARTED_CLIENTS_COUNT = 100;
-	private static final int MIN_STARTING_OFFSET = 100; // milliseconds
+	public static String HOST = "localhost";
+	public static int PORT = BE_ADMIN?4445:4444;
+	
+	private static final int MIN_STAY_CONNECTED_TIME = 5*60; // seconds
+	private static final int MIN_STARTING_OFFSET = 150; // milliseconds
 
 	public AdminConnection m_con;
 	private boolean m_autoRegister = false;

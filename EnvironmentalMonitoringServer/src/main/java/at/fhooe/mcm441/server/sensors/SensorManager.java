@@ -148,7 +148,9 @@ public class SensorManager implements IMultiClientNetworkListener, IMultiClientN
 		container.sensor.dataType = dataType;
 		container.sensor.isPolling = isPolling;
 		if (isPolling) {
-			m_pollSensors.add(container);
+			synchronized (m_pollSensors) {
+				m_pollSensors.add(container);
+			}
 			String defaultPolling = m_prefs
 					.getValue(Definitions.PREFIX_SERVER_DEFAULT_POLLING);
 			int time = Integer.parseInt(defaultPolling);

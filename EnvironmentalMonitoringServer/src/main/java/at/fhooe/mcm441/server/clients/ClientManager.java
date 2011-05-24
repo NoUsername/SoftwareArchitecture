@@ -126,7 +126,11 @@ public class ClientManager {
 			return null;
 		}
 		if (clients.dirty) {
-			cleanDirtyList(clients);
+			synchronized (clients) {
+				if (clients.dirty) {
+					cleanDirtyList(clients);
+				}
+			}
 		}
 		return clients.list;
 	}

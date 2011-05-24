@@ -45,7 +45,7 @@ public class SensorApp implements IPackageListener, IConnectionStatusListener
     /** if false, data gets pushed */
     private boolean m_isPoll = false;
     /** descriptive text */
-    private String m_description = "Some sensor";
+    protected String m_description = "Some sensor";
     /** the datatype */
     private String m_datatype = "°C";
     /** how long to wait between data pushes */
@@ -79,6 +79,15 @@ public class SensorApp implements IPackageListener, IConnectionStatusListener
 		m_description = m_possibleDescriptions[idx];
 		m_datatype = m_datatypes[idx];
 		
+		beginCommunication();
+	}
+	
+	
+	/**
+	 * sends the initial info (name, ...)
+	 * and starts the push thread if this is a push sensor
+	 */
+	protected void beginCommunication() {
 		String startMsg = SensorProtocol.createSensorInfoMsg(m_description, m_datatype, m_isPoll);
 		
 		m_client.sendMessage(startMsg);
@@ -96,7 +105,6 @@ public class SensorApp implements IPackageListener, IConnectionStatusListener
 		} else {
 			log.info("started polling sensor...");
 		}
-		
 	}
 
 	/**

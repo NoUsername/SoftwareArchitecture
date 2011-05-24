@@ -222,7 +222,7 @@ public class ClientAbstraction implements IChangeListener,
 	public void update(String key, String msg) {
 		if (key.startsWith(Definitions.PREFIX_SENSORS_VISIBILITY)) {
 			// notify all clients
-			log.info("a sensor has become (in)visible");
+			log.trace("a sensor has become (in)visible");
 			String sensorId = key.replace(VISIBILITY, "");
 			String msgToSend = null;
 			if ("true".equals(msg)) {

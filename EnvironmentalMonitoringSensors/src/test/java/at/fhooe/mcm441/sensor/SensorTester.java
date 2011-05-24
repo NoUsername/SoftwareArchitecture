@@ -12,16 +12,16 @@ public class SensorTester extends SensorApp {
 	private static final boolean HARDCORETEST = true; // if this is true, not one but MANY clients are started
 	private static final boolean LOGGING = !HARDCORETEST;
 	
-	private static final int STARTED_CLIENTS_COUNT = 20;
+	private static final int STARTED_CLIENTS_COUNT = 15;
 	private static final int MIN_STARTING_OFFSET = 200; // milliseconds
 	
 	private static final String HOST = "localhost";
-	private static final int PORT = 5555;
+	private static final int PORT = 4441;
 	
 	private static int msgsSentCount = 0;
 	private static int clientsConnectedCount = 0;
 	
-
+	private static int instanceCount = 0;
 
 	public static void main(String[] args) throws Exception {
 		if (!HARDCORETEST) {
@@ -29,6 +29,15 @@ public class SensorTester extends SensorApp {
 		} else {
 			hardCoreTest();
 		}
+	}
+	
+	@Override
+	protected void beginCommunication() {
+		// first we change the name to indicate the instance
+		int count = instanceCount++;
+		m_description = m_description + "(" + count + ")";
+		super.beginCommunication();
+		
 	}
 	
 	public static void hardCoreTest() throws Exception {
