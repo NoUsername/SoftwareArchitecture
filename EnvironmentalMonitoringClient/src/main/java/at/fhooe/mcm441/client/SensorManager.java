@@ -1,9 +1,7 @@
 package at.fhooe.mcm441.client;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Vector;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ScrolledComposite;
@@ -27,6 +25,15 @@ import at.fhooe.mcm441.commons.Configuration.SettingType;
 import at.fhooe.mcm441.commons.network.Client;
 import at.fhooe.mcm441.commons.protocol.IAdminClientSideListener;
 
+/**
+ * client for the admin
+ * shows all active sensors with sensor data
+ * and additionally all connected clients and 
+ * the admin can configure the sensor settings (polling time, active/inactive)
+ * 
+ * @author Melanie Schmidt, Paul Klingelhuber
+ *
+ */
 public class SensorManager extends SensorViewer implements
 		IAdminClientSideListener {
 	private static final Logger log = org.slf4j.LoggerFactory
@@ -34,22 +41,21 @@ public class SensorManager extends SensorViewer implements
 
 	public AdminConnection m_admin_con;
 	
-	private ArrayList<String> m_all_sensors;
 	private Map<String, Control> m_all_configs;
-	public Vector<Configuration> configItems;
 
 	// key = sensorID
 	private static Map<String, Configuration> m_configItems;
 
 	public static void main(String[] args) throws Exception {
 		SensorManager client = new SensorManager();
-		ClientIpInput setIP = new ClientIpInput(client);
+		new ClientIpInput(client);
 	}
 
 	// Gui elements
 	private Group m_group2;
 	private Group m_group3;
 	private Composite composite3;
+	private Composite composite4;
 
 	public SensorManager()
 			throws Exception {
@@ -61,7 +67,6 @@ public class SensorManager extends SensorViewer implements
 		m_admin_con = new AdminConnection(HOST, PORT, this, this);
 		m_con = m_admin_con;
 		m_configItems = new HashMap<String, Configuration>();
-		m_all_sensors = new ArrayList<String>();
 		m_all_configs = new HashMap<String, Control>();
 
 	}
@@ -71,14 +76,50 @@ public class SensorManager extends SensorViewer implements
 		super.setupGui();
 
 		GridData gridData;
-		m_group2 = new Group(m_shell, SWT.NULL);
-		m_group2.setText("connected clients");
-		gridData = new GridData(150, 200);
-		gridData.verticalAlignment = GridData.BEGINNING;
+		
+		/*
+		 * connected clients
+		 */
+		
+		m_group2 = new Group(m_shell, SWT.V_SCROLL);
+	    m_group2.setText("connected clients");
+	    
+		gridData = new GridData();
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.verticalAlignment = GridData.FILL;
+		gridData.grabExcessVerticalSpace = true;
+		gridData.grabExcessHorizontalSpace = true;
+		
 		m_group2.setLayoutData(gridData);
 		m_group2.setLayout(new GridLayout(1, false));
 		
-	    m_group3 = new Group(m_shell, SWT.NULL);
+	    final ScrolledComposite container2 = new ScrolledComposite (m_group2, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+		composite4 = new Composite(container2, SWT.NULL);
+
+		composite4.setLayout(new GridLayout(1, false));
+
+		container2.setContent(composite4);
+		
+		gridData = new GridData();
+		gridData.grabExcessHorizontalSpace = true;
+		gridData.grabExcessVerticalSpace = true;
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.verticalAlignment = GridData.FILL;
+		container2.setLayoutData(gridData);
+		
+		container2.addControlListener(new ControlAdapter() {
+		      public void controlResized(ControlEvent e) {
+		        Rectangle r = container2.getClientArea();
+		        container2.setMinSize(m_group2.computeSize(r.width,
+		            SWT.DEFAULT));
+		      }
+		    });
+		
+		/*
+		 * settings
+		 */
+		
+	    m_group3 = new Group(m_shell, SWT.V_SCROLL);
 	    m_group3.setText("settings");
 	    
 		gridData = new GridData();
@@ -93,13 +134,7 @@ public class SensorManager extends SensorViewer implements
 	    final ScrolledComposite container = new ScrolledComposite (m_group3, SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 		composite3 = new Composite(container, SWT.NULL);
 
-		gridData = new GridData();
-		gridData.grabExcessHorizontalSpace = true;
-		gridData.grabExcessVerticalSpace = true;
-		gridData.horizontalAlignment = GridData.FILL;
-		gridData.verticalAlignment = GridData.FILL;
 		composite3.setLayout(new GridLayout(3, false));
-		composite3.setLayoutData(gridData);
 
 		container.setContent(composite3);
 		
@@ -120,6 +155,8 @@ public class SensorManager extends SensorViewer implements
 				
 		container.setMinHeight(100);
 		container.setMinWidth(200);
+		
+		m_shell.setText("SensorManager");
 
 	}
 
@@ -168,11 +205,11 @@ public class SensorManager extends SensorViewer implements
 
 				// show connect clients
 				// Create a read-only text field
-				Text clients = new Text(m_group2, SWT.READ_ONLY | SWT.BORDER);
+				Text clients = new Text(composite4, SWT.READ_ONLY | SWT.BORDER);
 				clients.setText(client.m_address);
 				clients.setData("client", client.m_id);
 
-				m_group2.pack();
+				composite4.pack();
 			}
 		});
 	}
@@ -187,7 +224,6 @@ public class SensorManager extends SensorViewer implements
 			public void run() {
 				// remove clients from gui
 				Control[] checkboxchilds = m_group2.getChildren();
-				System.out.println("blub" + checkboxchilds);
 				for (Control child : checkboxchilds) {
 					if (client.m_id.equals(child.getData("client"))) {
 						System.out.println("blub");
@@ -260,7 +296,6 @@ public class SensorManager extends SensorViewer implements
 			});
 		} else {
 			// checkbox:			
-			m_all_sensors.add(sensorId);
 				
 			final Button entry = new Button(c, SWT.CHECK);
 			entryControl = entry;

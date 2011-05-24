@@ -9,20 +9,30 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+/**
+ * class for setting the host and port for the client to connect to the server
+ * sensorviewer port: 4444
+ * sensormanager port: 4445
+ * 
+ * @author Melanie Schmidt
+ *
+ */
 
 public class ClientIpInput {
-    Display display;
-    Shell shell;
+    private Display display;
+    private Shell shell;
+    private int style = SWT.ICON_WARNING | SWT.OK | SWT.CANCEL;
 
     public ClientIpInput(final SensorViewer client) {
     display = new Display();
     shell = new Shell(display);
-    shell.setSize(200, 150);
+    shell.setSize(260, 150);
     
-    shell.setText("set Client IP");
+    shell.setText("set Client Connection");
     
     FormLayout formLayout = new FormLayout ();
 	formLayout.marginWidth = 10;
@@ -55,6 +65,28 @@ public class ClientIpInput {
     t2.setLayoutData(fd);
     t2.setText("4444");
     
+    final Button checkbox = new Button(shell, SWT.CHECK);
+    checkbox.setText("localhost");
+    fd = new FormData();
+    fd.top = new FormAttachment(l1, 0, SWT.TOP);
+    fd.left = new FormAttachment(t1, 10);
+    checkbox.setLayoutData(fd);
+
+    checkbox.addSelectionListener(new SelectionAdapter() {
+	      public void widgetSelected(SelectionEvent event) {
+	    	  if(checkbox.getSelection())
+	    	  {
+	    		  t1.setText("127.0.0.1");
+	    		  t1.update();
+	    	  }
+	    	  else
+	    	  {
+	    		  t1.setText("");
+	    		  t1.update();
+	    	  }	                 	          
+	        }
+	      });
+    
     Button cancel = new Button (shell, SWT.PUSH);
 	cancel.setText ("Cancel");
 	FormData data = new FormData ();
@@ -64,7 +96,6 @@ public class ClientIpInput {
 	cancel.setLayoutData (data);
 	cancel.addSelectionListener (new SelectionAdapter () {
 		public void widgetSelected (SelectionEvent e) {
-			System.out.println("User cancelled dialog");
 			shell.close ();
 		}
 	});
@@ -78,17 +109,42 @@ public class ClientIpInput {
 	ok.setLayoutData (data);
 	ok.addSelectionListener (new SelectionAdapter () {
 		public void widgetSelected (SelectionEvent e) {
-			client.setConnectionInfo(t1.getText(), Integer.parseInt(t2.getText()));
-			display.syncExec(new Runnable() {
-				public void run() {
-					try {
-						shell.setVisible(false);
-						shell.close ();
-						client.startSensorViewer(false, 0);
-					} catch (Exception e1) {
-						e1.printStackTrace();
-					}
-				}});
+			
+			try {
+				if((t1.getText().isEmpty()) && (t2.getText().isEmpty()))
+				{				
+					MessageBox messageBox = new MessageBox(shell, style);
+				    messageBox.setMessage("Please insert HOST and PORT");
+				    int rc = messageBox.open();
+				    switch (rc) {
+				    case SWT.OK:
+				        //ok, new input
+				        display.syncExec(
+				        		  new Runnable() {
+				        		    public void run(){
+				        		    	display.dispose();			        		  
+				        		    	new ClientIpInput(client);
+				        		    }
+				        		  });
+				        break;
+				      case SWT.CANCEL:
+				    	  //cancel
+				        break;
+				    }
+//				    display.dispose();
+				}
+				else
+				{
+					client.setConnectionInfo(t1.getText(), Integer.parseInt(t2.getText()));
+					display.dispose();
+					client.startSensorViewer(false, 0);
+				}
+				
+			} catch (Exception e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			shell.close ();
 		}
 	});
 
