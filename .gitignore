@@ -6,3 +6,4 @@ EnvironmentalMonitoringServer/.settings
 target
 .settings
 EnvironmentalMonitoringServer/*.log
+EnvironmentalMonitoringServer/fileLog/

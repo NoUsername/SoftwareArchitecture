@@ -223,7 +223,7 @@ public class SensorManager extends SensorViewer implements
 		m_shell.getDisplay().syncExec(new Runnable() {
 			public void run() {
 				// remove clients from gui
-				Control[] checkboxchilds = m_group2.getChildren();
+				Control[] checkboxchilds = composite4.getChildren();
 				for (Control child : checkboxchilds) {
 					if (client.m_id.equals(child.getData("client"))) {
 						System.out.println("blub");
@@ -231,7 +231,7 @@ public class SensorManager extends SensorViewer implements
 						break;
 					}
 				}
-				m_group2.pack();
+				composite4.pack();
 			}
 		});
 	}
