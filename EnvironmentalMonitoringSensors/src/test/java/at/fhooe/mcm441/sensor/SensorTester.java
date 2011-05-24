@@ -12,7 +12,7 @@ public class SensorTester extends SensorApp {
 	private static final boolean HARDCORETEST = true; // if this is true, not one but MANY clients are started
 	private static final boolean LOGGING = !HARDCORETEST;
 	
-	private static final int STARTED_CLIENTS_COUNT = 15;
+	private static final int STARTED_CLIENTS_COUNT = 10;
 	private static final int MIN_STARTING_OFFSET = 200; // milliseconds
 	
 	private static final String HOST = "localhost";
@@ -35,7 +35,7 @@ public class SensorTester extends SensorApp {
 	protected void beginCommunication() {
 		// first we change the name to indicate the instance
 		int count = instanceCount++;
-		m_description = m_description + "(" + count + ")";
+		m_description = m_description + " (" + count + ")";
 		super.beginCommunication();
 		
 	}

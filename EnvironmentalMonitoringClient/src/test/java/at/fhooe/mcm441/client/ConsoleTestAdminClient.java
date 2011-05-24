@@ -21,7 +21,7 @@ public class ConsoleTestAdminClient implements IAdminClientSideListener,
 	private static final boolean HARDCORETEST = true; // if this is true, not one but MANY clients are started
 	private static final boolean LOGGING = !HARDCORETEST;
 	private static final boolean BE_ADMIN = false; // if true the client will be an admin client, which means more stuff to do for the server
-	private static final int STARTED_CLIENTS_COUNT = 150;
+	private static final int STARTED_CLIENTS_COUNT = 100;
 	
 	public static String HOST = "localhost";
 	public static int PORT = BE_ADMIN?4445:4444;
