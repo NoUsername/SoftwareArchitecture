@@ -51,7 +51,6 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 	public Connection m_con;
 	protected boolean m_autoRegister = false;
 	protected ArrayList<String> m_sensors = new ArrayList<String>();
-	//key = sensorID
 
 	protected Boolean connected = null;
 	private static int clientsConnectedCount = 0;
@@ -113,6 +112,10 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 		
 		composite1 = new ScrolledComposite (m_shell, SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
 		gridData = new GridData(150,400);
+		gridData.horizontalAlignment = GridData.FILL;
+		gridData.verticalAlignment = GridData.FILL;
+		gridData.grabExcessVerticalSpace = false;
+		gridData.grabExcessHorizontalSpace = true;
 		composite1.setLayoutData(gridData);
 		composite1.setLayout(new GridLayout(2, false));
 			
