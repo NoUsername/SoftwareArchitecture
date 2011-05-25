@@ -21,7 +21,7 @@
           </descriptors>
           <archive>
             <manifest>
-              <mainClass>at.fhooe.mcm441.client.SensorManager</mainClass>
+              <mainClass>at.fhooe.mcm441.client.App</mainClass>
             </manifest>
           </archive>
         </configuration>

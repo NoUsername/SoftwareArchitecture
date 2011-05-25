@@ -30,13 +30,15 @@ public class SensorApp implements IPackageListener, IConnectionStatusListener
     public static void main( String[] args ) throws Exception
     {
     	String host = "localhost";
-    	int port = 5555;
+    	int port = 4441;
+    	if (args.length > 0) {
+    		host = args[0];
+    	}
+    	
     	if (args.length > 1) {
-    		host = args[1];
+    		port = Integer.parseInt(args[1]);
     	}
-    	if (args.length > 2) {
-    		port = Integer.parseInt(args[2]);
-    	}
+    	
     	new SensorApp(host, port);
 	}
     

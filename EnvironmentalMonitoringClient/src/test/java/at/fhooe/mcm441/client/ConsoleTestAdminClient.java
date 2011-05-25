@@ -24,6 +24,7 @@ public class ConsoleTestAdminClient implements IAdminClientSideListener,
 	private static final int STARTED_CLIENTS_COUNT = 100;
 	
 	public static String HOST = "localhost";
+	
 	public static int PORT = BE_ADMIN?4445:4444;
 	
 	private static final int MIN_STAY_CONNECTED_TIME = 5*60; // seconds
