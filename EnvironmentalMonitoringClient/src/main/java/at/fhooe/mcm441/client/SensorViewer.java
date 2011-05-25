@@ -216,7 +216,7 @@ public class SensorViewer implements IClientSideListener, IConnectionStatusListe
 		container.setLayout(new FillLayout(SWT.VERTICAL));
 		container.setData("chartID", sensor.ident);
 		tabItem.setControl (container);
-		Chart newChart = LineChartExample.createChart(container);
+		Chart newChart = createChart(container);
 		
 		//set first value of chart to 0
 		double[] ySeries = { 0.0 };
@@ -372,6 +372,34 @@ try {
 			log.info("we got disconnected");
 		connected = Boolean.FALSE;
 	}
+	
+    /**
+     * create the chart.
+     * 
+     * @param parent
+     *            The parent composite
+     * @return The created chart
+     */
+	public Chart createChart(Composite parent) {
+
+        // create a chart
+        Chart chart = new Chart(parent, SWT.NONE);
+
+        // set titles
+        chart.getTitle().setText("Line Chart");
+        chart.getAxisSet().getXAxis(0).getTitle().setText("Data Points");
+        chart.getAxisSet().getYAxis(0).getTitle().setText("Amplitude");
+
+        // create line series
+        ILineSeries lineSeries = (ILineSeries) chart.getSeriesSet()
+                .createSeries(SeriesType.LINE, "line series");
+        lineSeries.setYSeries(new double[]{0.0});
+
+        // adjust the axis range
+        chart.getAxisSet().adjustRange();
+
+        return chart;
+    }
 
 }
 
