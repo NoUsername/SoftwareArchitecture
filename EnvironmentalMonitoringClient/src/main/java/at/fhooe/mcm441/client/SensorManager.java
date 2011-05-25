@@ -43,9 +43,6 @@ public class SensorManager extends SensorViewer implements
 	
 	private Map<String, Control> m_all_configs;
 
-	// key = sensorID
-	private static Map<String, Configuration> m_configItems;
-
 	public static void main(String[] args) throws Exception {
 		SensorManager client = new SensorManager();
 		new ClientIpInput(client);
@@ -66,7 +63,6 @@ public class SensorManager extends SensorViewer implements
 	public void newConnection() throws Exception {
 		m_admin_con = new AdminConnection(HOST, PORT, this, this);
 		m_con = m_admin_con;
-		m_configItems = new HashMap<String, Configuration>();
 		m_all_configs = new HashMap<String, Control>();
 
 	}
@@ -167,8 +163,6 @@ public class SensorManager extends SensorViewer implements
 			log.info("sensor conf item for sensor " + sensorId + " " + conf);
 		msgsReceivedCount++;
 
-		m_configItems.put(sensorId, conf);
-
 		m_display.syncExec(new Runnable() {
 			@Override
 			public void run() {
@@ -226,7 +220,6 @@ public class SensorManager extends SensorViewer implements
 				Control[] checkboxchilds = composite4.getChildren();
 				for (Control child : checkboxchilds) {
 					if (client.m_id.equals(child.getData("client"))) {
-						System.out.println("blub");
 						child.dispose();
 						break;
 					}
